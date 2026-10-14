@@ -129,44 +129,53 @@ pub unsafe extern "C" fn sound_attackdash(agent: &mut L2CAgentBase) {
     if now!(agent) { se(agent, "se_plizardon_landing02"); }
 }
 
-// ===================================================================== F-TILT: push kick with his whole weight behind it
+// ===================================================================== F-TILT: Crunch - lunging bite (Piranha Plant style), fangs flash over his face
 pub unsafe extern "C" fn game_attacks3(agent: &mut L2CAgentBase) {
     at!(agent, 9);
     if now!(agent) {
-        hit_cap(agent, 0, 0, "top", 13.0, 361, 92, 0, 50, 4.2, 9.0, 8.0, 8.5, 16.5, 1.3, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
-        hit(agent, 1, 0, "top", 11.0, 361, 85, 0, 45, 4.0, 0.0, 10.0, 4.5, 1.2, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_BODY);
+        // the snap: jaws/tusk tips are the sweetspot, the neck behind them sours
+        hit(agent, 0, 0, "top", 13.0, 40, 92, 0, 48, 4.0, 0.0, 12.8, 19.0, 1.3, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_BITE);
+        hit_cap(agent, 1, 0, "top", 10.0, 45, 85, 0, 45, 3.6, 13.8, 11.0, 13.2, 16.0, 1.1, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_BITE);
     }
     at!(agent, 12);
-    if now!(agent) {
-        AttackModule::clear(agent.module_accessor, 1, false);
-        hit_cap(agent, 0, 0, "top", 9.0, 361, 75, 0, 45, 3.8, 9.0, 8.0, 8.5, 16.5, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
-    }
-    at!(agent, 15);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
 }
 pub unsafe extern "C" fn effect_attacks3(agent: &mut L2CAgentBase) {
-    at!(agent, 7);
+    at!(agent, 6);
     if now!(agent) {
-        macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -3, 0, 0, 0, 1.1, 0, 0, 0, 0, 0, 0, false);
-        fx(agent, "sys_attack_line", "top", 0.0, 8.5, 5.0, 0.0, 0.0, 0.0, 1.1);
-        tint(agent, 1.0, 0.6, 0.2);
+        macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -3, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 0, false);
+        fx(agent, "sys_attack_line", "top", 0.0, 13.5, 8.0, 0.0, 0.0, 0.0, 1.0);
+        purple(agent);
     }
-    at!(agent, 9);
+    at!(agent, 8);
     if now!(agent) {
-        fx(agent, "sys_attack_impact", "top", 0.0, 8.5, 16.5, 0.0, 0.0, 0.0, 1.4);
-        fx(agent, "sys_crown", "top", 0.0, 8.5, 15.0, 0.0, 0.0, 90.0, 0.6);
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_sliding_smoke"), Hash40::new("top"), 0, 0, 4, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 0, false);
+        // the fangs: a ghostly upper and lower jaw that clamp shut over his real ones (anime Crunch / Fire Fang)
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_b"), Hash40::new("sys_attack_arc_b"), Hash40::new("top"), 0, 16.0, 17.0, 0, 0, 200, 0.9, true, *EF_FLIP_YZ);
+        purple(agent);
+        macros::LAST_EFFECT_SET_RATE(agent, 1.6);
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_b"), Hash40::new("sys_attack_arc_b"), Hash40::new("top"), 0, 9.5, 17.0, 0, 0, -20, 0.9, true, *EF_FLIP_YZ);
+        purple(agent);
+        macros::LAST_EFFECT_SET_RATE(agent, 1.6);
+        // Piranha Plant's real chomp effect - only shows if ef_packun.eff is transplanted into effect/fighter/plizardon/transplant/
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("packun_bite"), Hash40::new("packun_bite"), Hash40::new("top"), 0, 12.8, 18.0, 0, -90, 0, 1.4, true, *EF_FLIP_YZ);
+        purple(agent);
+    }
+    at!(agent, 10);
+    if now!(agent) {
+        fx(agent, "sys_attack_impact", "top", 0.0, 12.8, 19.5, 0.0, 0.0, 0.0, 1.3);
+        purple(agent);
+        fx(agent, "sys_hit_cut", "top", 0.0, 12.8, 19.5, 0.0, 0.0, 0.0, 0.8);
     }
 }
 pub unsafe extern "C" fn sound_attacks3(agent: &mut L2CAgentBase) {
     at!(agent, 7);
-    if now!(agent) { se(agent, "se_plizardon_swing_l"); se(agent, "vc_plizardon_attack02"); }
-    at!(agent, 9);
-    if now!(agent) { se(agent, "se_plizardon_step_right_m"); }
+    if now!(agent) { se(agent, "se_plizardon_swing_m"); se(agent, "vc_plizardon_attack02"); }
+    at!(agent, 10);
+    if now!(agent) { se(agent, "se_common_swing_04"); }
 }
 pub unsafe extern "C" fn expression_attacks3(agent: &mut L2CAgentBase) {
-    at!(agent, 9);
-    if now!(agent) { macros::RUMBLE_HIT(agent, Hash40::new("rbkind_attackl"), 0); macros::QUAKE(agent, *CAMERA_QUAKE_KIND_S); }
+    at!(agent, 10);
+    if now!(agent) { macros::RUMBLE_HIT(agent, Hash40::new("rbkind_attackm"), 0); }
 }
 
 // ===================================================================== U-TILT: tail flip (Yoshi style) - tail whips up from behind, over his head
@@ -352,13 +361,28 @@ pub unsafe extern "C" fn game_attackairb(agent: &mut L2CAgentBase) {
     if now!(agent) { WorkModule::off_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING); }
 }
 pub unsafe extern "C" fn effect_attackairb(agent: &mut L2CAgentBase) {
-    at!(agent, 7);
+    at!(agent, 6);
     if now!(agent) {
-        fx(agent, "sys_attack_line", "top", 0.0, 9.5, -4.0, 0.0, 180.0, 0.0, 1.0);
-        tint(agent, 1.0, 0.6, 0.2);
+        // twin speed streaks along both legs as they shoot out
+        fx(agent, "sys_attack_line", "top", 0.0, 13.5, -3.0, 0.0, 180.0, 0.0, 1.6);
+        tint(agent, 1.0, 0.55, 0.15);
+        fx(agent, "sys_attack_line", "top", 0.0, 5.5, -3.0, 0.0, 180.0, 0.0, 1.6);
+        tint(agent, 1.0, 0.55, 0.15);
     }
     at!(agent, 8);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 9.5, -12.5, 0.0, 0.0, 0.0, 1.2); }
+    if now!(agent) {
+        // double impact burst at the soles + a shockwave ring blasting backwards
+        fx(agent, "sys_attack_impact", "top", 0.0, 13.8, -13.0, 0.0, 0.0, 0.0, 2.0);
+        fx(agent, "sys_attack_impact", "top", 0.0, 5.4, -13.0, 0.0, 0.0, 0.0, 2.0);
+        fx(agent, "sys_crown", "top", 0.0, 9.5, -13.5, 0.0, 0.0, 90.0, 1.0);
+        tint(agent, 1.0, 0.7, 0.3);
+        fx(agent, "sys_smash_flash_s", "top", 0.0, 9.5, -13.0, 0.0, 0.0, 0.0, 1.6);
+        fx(agent, "sys_bomb_a", "top", 0.0, 9.5, -14.0, 0.0, 0.0, 0.0, 0.55);
+    }
+}
+pub unsafe extern "C" fn expression_attackairb(agent: &mut L2CAgentBase) {
+    at!(agent, 8);
+    if now!(agent) { macros::QUAKE(agent, *CAMERA_QUAKE_KIND_S); macros::RUMBLE_HIT(agent, Hash40::new("rbkind_attackl"), 0); }
 }
 pub unsafe extern "C" fn sound_attackairb(agent: &mut L2CAgentBase) {
     at!(agent, 7);

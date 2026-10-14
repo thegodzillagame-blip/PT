@@ -62,6 +62,7 @@ pub fn install() {
         .game_acmd("game_attackairb", game_attackairb, Low)
         .effect_acmd("effect_attackairb", effect_attackairb, Low)
         .sound_acmd("sound_attackairb", sound_attackairb, Low)
+        .expression_acmd("expression_attackairb", expression_attackairb, Low)
         .game_acmd("game_attackairf", game_attackairf, Low)
         .game_acmd("game_attackairhi", game_attackairhi, Low)
         .effect_acmd("effect_attackairhi", effect_attackairhi, Low)
