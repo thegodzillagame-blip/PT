@@ -91,8 +91,8 @@ pub unsafe extern "C" fn game_specials(agent: &mut L2CAgentBase) {
     if now!(agent) {
         JostleModule::set_status(agent.module_accessor, false);
         // wild alternating claw swipes in front of him - any connect triggers the rage burst (Charizard's Flare Blitz hit)
-        hitm(agent, 0, "top", 6.0, 366, 78, 46, 60, 4.8, 9.3, 6.0, 7.0, 16.5, 4, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
-        hitm(agent, 1, "top", 6.0, 366, 78, 46, 60, 4.5, 5.6, 5.0, 5.6, 9.0, 4, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+        hitm(agent, 0, "top", 3.0, 366, 78, 46, 60, 4.8, 9.3, 6.0, 7.0, 16.5, 5, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+        hitm(agent, 1, "top", 3.0, 366, 78, 46, 60, 4.5, 5.6, 5.0, 5.6, 9.0, 5, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
     }
 }
 pub unsafe extern "C" fn effect_specials(agent: &mut L2CAgentBase) {
@@ -150,9 +150,8 @@ pub unsafe extern "C" fn effect_specialsblown(agent: &mut L2CAgentBase) {
 pub unsafe extern "C" fn game_specialairs(agent: &mut L2CAgentBase) {
     if now!(agent) {
         JostleModule::set_status(agent.module_accessor, false);
-        hitm(agent, 0, "top", 6.0, 366, 78, 46, 60, 8.0, 12.0, 0.0, 12.0, 0.0, 4, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hitm(agent, 0, "top", 3.0, 366, 78, 46, 60, 8.0, 12.0, 0.0, 12.0, 0.0, 5, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
-    wait(agent.lua_state_agent, 22.0);
 }
 pub unsafe extern "C" fn effect_specialairs(agent: &mut L2CAgentBase) {
     at!(agent, 1);
@@ -170,7 +169,7 @@ pub unsafe extern "C" fn sound_specialairs(agent: &mut L2CAgentBase) {
 // --- the rage burst (Flare Blitz's explosion article)
 pub unsafe extern "C" fn game_explosion(agent: &mut L2CAgentBase) {
     if now!(agent) {
-        macros::ATTACK(agent, 0, 0, Hash40::new("top"), 18.0, 361, 77, 0, 70, 11.0, 0.0, 0.0, 0.0, None, None, None, 1.5, 1.0, *ATTACK_SETOFF_KIND_OFF, *ATTACK_LR_CHECK_F, false, 0, 0.0, 0, true, true, false, false, false, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_cutup"), *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+        macros::ATTACK(agent, 0, 0, Hash40::new("top"), 12.0, 361, 80, 0, 70, 11.0, 0.0, 0.0, 0.0, None, None, None, 1.5, 1.0, *ATTACK_SETOFF_KIND_OFF, *ATTACK_LR_CHECK_F, false, 0, 0.0, 0, true, true, false, false, false, *COLLISION_SITUATION_MASK_GA, *COLLISION_CATEGORY_MASK_ALL, *COLLISION_PART_MASK_ALL, false, Hash40::new("collision_attr_cutup"), *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
     }
 }
 pub unsafe extern "C" fn effect_explosion(agent: &mut L2CAgentBase) {

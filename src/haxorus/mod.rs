@@ -20,6 +20,10 @@ static mut DD_STACK: [i32; 8] = [0; 8];
 static mut DD_TIMER: [i32; 8] = [0; 8];
 static mut DD_DANCE: [i32; 8] = [0; 8];
 static mut DD_GRANTED: [bool; 8] = [false; 8];
+static mut OUTRAGE_HITS: [i32; 8] = [0; 8];
+static mut OUTRAGE_WAS_HIT: [bool; 8] = [false; 8];
+static mut GIGA: [bool; 8] = [false; 8];
+const OUTRAGE_MULTI: i32 = 4;          // claw hits before the rage burst is allowed to go off
 const DD_DURATION: i32 = 900;          // 15 seconds
 const DD_MAX_STACK: i32 = 3;           // +10% damage per stack
 
@@ -34,6 +38,10 @@ unsafe fn dragon_dance(boma: *mut BattleObjectModuleAccessor) {
     // no Flamethrower: the breath article never gets to exist
     ArticleModule::remove_exist(boma, *FIGHTER_PLIZARDON_GENERATE_ARTICLE_BREATH, ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL));
     let motion = MotionModule::motion_kind(boma);
+    // air Dragon Dance: kills all momentum as he starts, like a stall
+    if motion == smash::hash40("special_air_n_start") && MotionModule::frame(boma) < 1.0 {
+        KineticModule::clear_speed_all(boma);
+    }
     if motion == smash::hash40("special_n_start") || motion == smash::hash40("special_air_n_start") { DD_DANCE[e] = 0; }
     if motion == smash::hash40("special_n") || motion == smash::hash40("special_air_n") { DD_DANCE[e] += 1; }
     let ending = motion == smash::hash40("special_n_end") || motion == smash::hash40("special_air_n_end");
@@ -60,12 +68,42 @@ unsafe fn dragon_dance(boma: *mut BattleObjectModuleAccessor) {
     }
 }
 
+/// Outrage: Flare Blitz's rush normally explodes on the first fighter it touches. Hold that off for the first few
+/// claw hits (so it rakes them several times), then let the burst go.
+unsafe fn outrage(boma: *mut BattleObjectModuleAccessor, e: usize) {
+    let status = StatusModule::status_kind(boma);
+    if status == *FIGHTER_STATUS_KIND_SPECIAL_S { OUTRAGE_HITS[e] = 0; OUTRAGE_WAS_HIT[e] = false; return; }
+    if status != *FIGHTER_PLIZARDON_STATUS_KIND_SPECIAL_S_RUSH { return; }
+    let hit = AttackModule::is_infliction(boma, *COLLISION_KIND_MASK_HIT);
+    if hit && !OUTRAGE_WAS_HIT[e] { OUTRAGE_HITS[e] += 1; }
+    OUTRAGE_WAS_HIT[e] = hit;
+    if OUTRAGE_HITS[e] < OUTRAGE_MULTI {
+        WorkModule::on_flag(boma, *FIGHTER_PLIZARDON_STATUS_SPECIAL_S_FLAG_IS_DISABLE_FIGHTER_HIT_EXPLOSION);
+        WorkModule::off_flag(boma, *FIGHTER_PLIZARDON_STATUS_SPECIAL_S_FLAG_IS_STATUS_CHANGE_BLOWN);
+    } else {
+        WorkModule::off_flag(boma, *FIGHTER_PLIZARDON_STATUS_SPECIAL_S_FLAG_IS_DISABLE_FIGHTER_HIT_EXPLOSION);
+    }
+}
+
+/// Giga Impact: the helpless fall after it is a dive - accelerate down hard.
+unsafe fn giga_dive(boma: *mut BattleObjectModuleAccessor, e: usize) {
+    let status = StatusModule::status_kind(boma);
+    if status == *FIGHTER_STATUS_KIND_SPECIAL_HI { GIGA[e] = true; return; }
+    if status != *FIGHTER_STATUS_KIND_FALL_SPECIAL { GIGA[e] = false; return; }
+    if GIGA[e] && KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN) > -3.6 {
+        KineticModule::add_speed(boma, &Vector3f { x: 0.0, y: -0.22, z: 0.0 });
+    }
+}
+
 /// Every frame: Charizard's code keeps re-spawning his tail flame - Haxorus has none.
 /// Also mirrors the nair turn when he faces left, so the roar always faces the camera.
 unsafe extern "C" fn haxorus_frame(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
     EffectModule::kill_kind(boma, Hash40::new("plizardon_tail_fire"), false, true);
     dragon_dance(boma);
+    let e = (WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize).min(7);
+    outrage(boma, e);
+    giga_dive(boma, e);
     if PostureModule::lr(boma) < 0.0 && MotionModule::motion_kind(boma) == smash::hash40("attack_air_n") {
         let f = (MotionModule::frame(boma) as usize).min(NAIR_YAW.len() - 1);
         let rot = Vector3f { x: 0.0, y: -2.0 * NAIR_YAW[f], z: 0.0 };
@@ -146,12 +184,12 @@ pub fn install() {
         .sound_acmd("sound_specialn", sound_specialn, Low)
         .effect_acmd("effect_specialnend", effect_specialnend, Low)
         .sound_acmd("sound_specialnend", sound_specialnend, Low)
-        .effect_acmd("effect_specialairnstart", effect_none, Low)
-        .sound_acmd("sound_specialairnstart", effect_none, Low)
-        .effect_acmd("effect_specialairn", effect_none, Low)
-        .sound_acmd("sound_specialairn", effect_none, Low)
-        .effect_acmd("effect_specialairnend", effect_none, Low)
-        .sound_acmd("sound_specialairnend", sound_specialairnend, Low)
+        .effect_acmd("effect_specialairnstart", effect_specialnstart, Low)
+        .sound_acmd("sound_specialairnstart", sound_specialnstart, Low)
+        .effect_acmd("effect_specialairn", effect_specialn, Low)
+        .sound_acmd("sound_specialairn", sound_specialn, Low)
+        .effect_acmd("effect_specialairnend", effect_specialnend, Low)
+        .sound_acmd("sound_specialairnend", sound_specialnend, Low)
         .effect_acmd("effect_specialsstart", effect_specialsstart, Low)
         .sound_acmd("sound_specialsstart", sound_specialsstart, Low)
         .game_acmd("game_specials", game_specials, Low)
@@ -184,6 +222,13 @@ pub fn install() {
         .effect_acmd("effect_landingfallspecial", effect_landingfallspecial, Low)
         .sound_acmd("sound_landingfallspecial", sound_landingfallspecial, Low)
         .expression_acmd("expression_landingfallspecial", expression_landingfallspecial, Low)
+        .install();
+    // no Flamethrower: the breath projectile does nothing and shows nothing
+    Agent::new("plizardon_breath")
+        .set_costume(crate::SLOTS.to_vec())
+        .game_acmd("game_move", specials::effect_none, Low)
+        .effect_acmd("effect_move", specials::effect_none, Low)
+        .sound_acmd("sound_move", specials::effect_none, Low)
         .install();
     // Outrage's rage burst replaces Flare Blitz's fire explosion
     Agent::new("plizardon_explosion")
