@@ -223,13 +223,6 @@ pub fn install() {
         .sound_acmd("sound_landingfallspecial", sound_landingfallspecial, Low)
         .expression_acmd("expression_landingfallspecial", expression_landingfallspecial, Low)
         .install();
-    // no Flamethrower: the breath projectile does nothing and shows nothing
-    Agent::new("plizardon_breath")
-        .set_costume(crate::SLOTS.to_vec())
-        .game_acmd("game_move", specials::effect_none, Low)
-        .effect_acmd("effect_move", specials::effect_none, Low)
-        .sound_acmd("sound_move", specials::effect_none, Low)
-        .install();
     // Outrage's rage burst replaces Flare Blitz's fire explosion
     Agent::new("plizardon_explosion")
         .set_costume(crate::SLOTS.to_vec())
