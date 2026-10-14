@@ -2,6 +2,8 @@ name: Build plugin
 on:
   push:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,7 +30,20 @@ jobs:
         run: |
           mkdir -p out
           cp target/aarch64-skyline-switch/release/libpt_team_c01.nro out/
+      - name: Fetch Smashline 2 (dependency plugin)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download -R HDR-Development/smashline -p "*.nro" -D out || echo "smashline download failed"
+      - name: Publish build to the 'builds' branch
+        run: |
+          cd out
+          git init -q -b builds
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "build ${{ github.sha }}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" builds
       - uses: actions/upload-artifact@v4
         with:
           name: libpt_team_c01
-          path: out/libpt_team_c01.nro
+          path: out/*.nro
