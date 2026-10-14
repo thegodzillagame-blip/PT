@@ -1,0 +1,34 @@
+name: Build plugin
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.rustup/toolchains
+            target
+          key: skyline-${{ hashFiles('Cargo.toml') }}
+      - name: Install cargo-skyline
+        run: command -v cargo-skyline || cargo install --git https://github.com/jam1garner/cargo-skyline
+      - name: Install Switch toolchain
+        run: cargo skyline update-std
+      - name: Build
+        run: cargo skyline build --release
+      - name: Collect plugin
+        run: |
+          mkdir -p out
+          cp target/aarch64-skyline-switch/release/libpt_team_c01.nro out/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libpt_team_c01
+          path: out/libpt_team_c01.nro
