@@ -20,6 +20,7 @@ unsafe fn release(agent: &mut L2CAgentBase) {
 // ===================================================================== UP THROW: heave sky-high, Dragon Pulse on the way down (85f, release f50)
 pub unsafe extern "C" fn game_throwhi(agent: &mut L2CAgentBase) {
     if now!(agent) {
+        macros::FT_MOTION_RATE(agent, 0.6);
         macros::ATTACK_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_THROW, 0, 10.0, 88, 75, 0, 75, 0.0, 1.0, *ATTACK_LR_CHECK_F, 0.0, true, Hash40::new("collision_attr_purple"), *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_FIRE, *ATTACK_REGION_THROW);
         macros::ATTACK_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_CATCH, 0, 3.0, 361, 100, 0, 60, 0.0, 1.0, *ATTACK_LR_CHECK_F, 0.0, true, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_NONE, *ATTACK_REGION_THROW);
     }
@@ -31,7 +32,7 @@ pub unsafe extern "C" fn game_throwhi(agent: &mut L2CAgentBase) {
         macros::CHECK_FINISH_CAMERA(agent, 1, 30);
     }
     at!(agent, 50);
-    if now!(agent) { release(agent); }
+    if now!(agent) { release(agent); macros::FT_MOTION_RATE(agent, 0.45); }
     at!(agent, 51);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
 }
@@ -76,22 +77,22 @@ pub unsafe extern "C" fn game_throwlw(agent: &mut L2CAgentBase) {
         macros::ATTACK_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_THROW, 0, 7.0, 70, 70, 0, 70, 0.0, 1.0, *ATTACK_LR_CHECK_F, 0.0, true, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_THROW);
         macros::ATTACK_ABS(agent, *FIGHTER_ATTACK_ABSOLUTE_KIND_CATCH, 0, 3.0, 361, 100, 0, 60, 0.0, 1.0, *ATTACK_LR_CHECK_F, 0.0, true, Hash40::new("collision_attr_normal"), *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_NONE, *ATTACK_REGION_THROW);
     }
-    at!(agent, 54);
+    at!(agent, 35);
     if now!(agent) {
         // the belly-flop shockwave clips anyone standing next to the pin
         hit(agent, 0, 0, "top", 5.0, 70, 70, 0, 60, 6.5, 0.0, 3.0, 9.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
         AttackModule::set_catch_only_all(agent.module_accessor, true, false);
         macros::CHECK_FINISH_CAMERA(agent, 8, 0);
     }
-    at!(agent, 55);
-    if now!(agent) { release(agent); }
-    at!(agent, 56);
+    at!(agent, 36);
+    if now!(agent) { release(agent); macros::FT_MOTION_RATE(agent, 0.55); }
+    at!(agent, 37);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
 }
 pub unsafe extern "C" fn effect_throwlw(agent: &mut L2CAgentBase) {
     at!(agent, 20);
     if now!(agent) { macros::LANDING_EFFECT(agent, Hash40::new("sys_jump_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 0, false); }
-    at!(agent, 55);
+    at!(agent, 36);
     if now!(agent) {
         fx(agent, "sys_attack_impact", "top", 0.0, 3.0, 9.0, 0.0, 0.0, 0.0, 1.5);
         fx(agent, "sys_crown", "top", 0.0, 0.0, 6.0, 0.0, 0.0, 0.0, 1.1);
@@ -101,11 +102,11 @@ pub unsafe extern "C" fn effect_throwlw(agent: &mut L2CAgentBase) {
 pub unsafe extern "C" fn sound_throwlw(agent: &mut L2CAgentBase) {
     at!(agent, 20);
     if now!(agent) { se(agent, "se_plizardon_jump01"); }
-    at!(agent, 54);
+    at!(agent, 35);
     if now!(agent) { se(agent, "se_plizardon_landing02"); se(agent, "vc_plizardon_attack06"); }
 }
 pub unsafe extern "C" fn expression_throwlw(agent: &mut L2CAgentBase) {
-    at!(agent, 55);
+    at!(agent, 36);
     if now!(agent) {
         macros::QUAKE(agent, *CAMERA_QUAKE_KIND_M);
         macros::RUMBLE_HIT(agent, Hash40::new("rbkind_attackl"), 0);

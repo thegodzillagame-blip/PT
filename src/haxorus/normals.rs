@@ -129,66 +129,70 @@ pub unsafe extern "C" fn sound_attackdash(agent: &mut L2CAgentBase) {
     if now!(agent) { se(agent, "se_plizardon_landing02"); }
 }
 
-// ===================================================================== F-TILT: push kick (Ganondorf style)
+// ===================================================================== F-TILT: push kick with his whole weight behind it
 pub unsafe extern "C" fn game_attacks3(agent: &mut L2CAgentBase) {
     at!(agent, 9);
     if now!(agent) {
-        hit_cap(agent, 0, 0, "top", 12.0, 361, 85, 0, 45, 4.0, 9.5, 7.0, 10.0, 15.0, 1.1, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
+        hit_cap(agent, 0, 0, "top", 13.0, 361, 92, 0, 50, 4.2, 9.0, 8.0, 8.5, 16.5, 1.3, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
+        hit(agent, 1, 0, "top", 11.0, 361, 85, 0, 45, 4.0, 0.0, 10.0, 4.5, 1.2, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_BODY);
     }
     at!(agent, 12);
     if now!(agent) {
-        hit_cap(agent, 0, 0, "top", 8.0, 361, 70, 0, 40, 3.6, 9.5, 7.0, 10.0, 15.0, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
+        AttackModule::clear(agent.module_accessor, 1, false);
+        hit_cap(agent, 0, 0, "top", 9.0, 361, 75, 0, 45, 3.8, 9.0, 8.0, 8.5, 16.5, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
     }
-    at!(agent, 14);
+    at!(agent, 15);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
 }
 pub unsafe extern "C" fn effect_attacks3(agent: &mut L2CAgentBase) {
-    at!(agent, 8);
+    at!(agent, 7);
     if now!(agent) {
-        fx(agent, "sys_attack_line", "top", 0.0, 10.0, 4.0, 0.0, 0.0, 0.0, 0.9);
+        macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -3, 0, 0, 0, 1.1, 0, 0, 0, 0, 0, 0, false);
+        fx(agent, "sys_attack_line", "top", 0.0, 8.5, 5.0, 0.0, 0.0, 0.0, 1.1);
         tint(agent, 1.0, 0.6, 0.2);
     }
     at!(agent, 9);
     if now!(agent) {
-        fx(agent, "sys_attack_impact", "top", 0.0, 10.0, 15.0, 0.0, 0.0, 0.0, 1.0);
-        macros::FOOT_EFFECT(agent, Hash40::new("sys_atk_smoke"), Hash40::new("top"), 0, 0, -2, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
+        fx(agent, "sys_attack_impact", "top", 0.0, 8.5, 16.5, 0.0, 0.0, 0.0, 1.4);
+        fx(agent, "sys_crown", "top", 0.0, 8.5, 15.0, 0.0, 0.0, 90.0, 0.6);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_sliding_smoke"), Hash40::new("top"), 0, 0, 4, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 0, false);
     }
 }
 pub unsafe extern "C" fn sound_attacks3(agent: &mut L2CAgentBase) {
-    at!(agent, 8);
-    if now!(agent) { se(agent, "se_plizardon_swing_m"); }
+    at!(agent, 7);
+    if now!(agent) { se(agent, "se_plizardon_swing_l"); se(agent, "vc_plizardon_attack02"); }
+    at!(agent, 9);
+    if now!(agent) { se(agent, "se_plizardon_step_right_m"); }
+}
+pub unsafe extern "C" fn expression_attacks3(agent: &mut L2CAgentBase) {
+    at!(agent, 9);
+    if now!(agent) { macros::RUMBLE_HIT(agent, Hash40::new("rbkind_attackl"), 0); macros::QUAKE(agent, *CAMERA_QUAKE_KIND_S); }
 }
 
-// ===================================================================== U-TILT: Dragon Claw (front -> overhead -> behind rake)
+// ===================================================================== U-TILT: tail flip (Yoshi style) - tail whips up from behind, over his head
 pub unsafe extern "C" fn game_attackhi3(agent: &mut L2CAgentBase) {
     at!(agent, 7);
     if now!(agent) {
-        hit(agent, 0, 0, "top", 9.0, 80, 85, 0, 50, 4.5, 0.0, 8.0, 9.0, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
-        hit(agent, 1, 0, "top", 9.0, 80, 85, 0, 50, 4.0, 0.0, 13.0, 6.0, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+        hit(agent, 0, 0, "tail4", 8.0, 95, 75, 0, 62, 5.0, 0.0, 0.0, 0.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        hit(agent, 1, 0, "tail3", 8.0, 95, 75, 0, 62, 4.5, 0.0, 0.0, 0.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        hit(agent, 2, 0, "tail2", 8.0, 95, 75, 0, 62, 4.0, 0.0, 0.0, 0.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
     }
-    at!(agent, 9);
-    if now!(agent) {
-        hit(agent, 0, 0, "top", 9.0, 88, 85, 0, 50, 5.0, 0.0, 24.0, 1.0, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
-        hit(agent, 1, 0, "top", 9.0, 88, 85, 0, 50, 4.5, 0.0, 17.0, 3.0, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
-    }
-    at!(agent, 11);
-    if now!(agent) {
-        hit(agent, 0, 0, "top", 7.0, 100, 80, 0, 45, 4.5, 0.0, 17.0, -8.0, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
-        AttackModule::clear(agent.module_accessor, 1, false);
-    }
-    at!(agent, 14);
+    at!(agent, 15);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
 }
 pub unsafe extern "C" fn effect_attackhi3(agent: &mut L2CAgentBase) {
-    at!(agent, 6);
+    at!(agent, 4);
+    if now!(agent) { macros::FOOT_EFFECT(agent, Hash40::new("sys_turn_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.1, 0, 0, 0, 0, 0, 0, false); }
+    at!(agent, 7);
     if now!(agent) {
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_scratch"), Hash40::new("plizardon_scratch"), Hash40::new("top"), 0, 16, 2, -90, 0, 90, 1.3, true, *EF_FLIP_YZ);
+        // Yoshi's own up-tilt arc, scaled up for the bigger tail
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 1, 14, -2, 0, 52, 88, 1.6, true, *EF_FLIP_YZ);
         purple(agent);
     }
 }
 pub unsafe extern "C" fn sound_attackhi3(agent: &mut L2CAgentBase) {
     at!(agent, 6);
-    if now!(agent) { se(agent, "se_plizardon_swing_m"); }
+    if now!(agent) { se(agent, "se_plizardon_tailswing"); }
 }
 
 // ===================================================================== U-SMASH: Guillotine (tusk axe chop, front -> up -> back)
@@ -218,8 +222,9 @@ pub unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
     if now!(agent) { macros::EFFECT_FLIP(agent, Hash40::new("sys_smash_flash"), Hash40::new("sys_smash_flash"), Hash40::new("top"), 0, 12, 8, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ); }
     at!(agent, 14);
     if now!(agent) {
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_smash_arc"), Hash40::new("plizardon_smash_arc"), Hash40::new("top"), 0, 17, 3, 0, -90, -90, 1.1, true, *EF_FLIP_YZ);
-        tint(agent, 0.9, 0.9, 1.2);
+        macros::EFFECT_FLIP(agent, Hash40::new("plizardon_smash_arc"), Hash40::new("plizardon_smash_arc"), Hash40::new("top"), 1, 10, 0, -30, -100, -80, 1.35, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ);
+        tint(agent, 0.9, 0.85, 1.25);
+        macros::LAST_EFFECT_SET_RATE(agent, 1.25);
     }
     at!(agent, 16);
     if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 24.0, 4.5, 0.0, 0.0, 0.0, 1.3); }
@@ -314,11 +319,11 @@ pub unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
         purple(agent);
     }
     at!(agent, 8);
-    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 90.0, 0.0, 0.0, 0.8); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 0.8); purple(agent); }
     at!(agent, 12);
-    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 90.0, 0.0, 0.0, 1.1); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 1.1); purple(agent); }
     at!(agent, 16);
-    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 90.0, 0.0, 0.0, 1.4); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 1.4); purple(agent); }
 }
 pub unsafe extern "C" fn sound_attackairn(agent: &mut L2CAgentBase) {
     at!(agent, 7);
@@ -391,4 +396,27 @@ pub unsafe extern "C" fn effect_attackairhi(agent: &mut L2CAgentBase) {
 pub unsafe extern "C" fn sound_attackairhi(agent: &mut L2CAgentBase) {
     at!(agent, 9);
     if now!(agent) { se(agent, "se_plizardon_attackair_h01"); }
+}
+
+// ===================================================================== FAIR: Charizard's claw swipe, faster recovery
+pub unsafe extern "C" fn game_attackairf(agent: &mut L2CAgentBase) {
+    at!(agent, 5);
+    if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING); }
+    at!(agent, 8);
+    if now!(agent) {
+        hit(agent, 0, 0, "arml", 12.0, 361, 92, 0, 35, 4.6, 6.0, 0.0, 1.5, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+        hit(agent, 1, 0, "arml", 12.0, 361, 92, 0, 35, 3.8, 0.0, 0.0, 1.5, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+        hit(agent, 2, 0, "shoulderl", 12.0, 361, 92, 0, 35, 3.0, 0.0, 0.0, 0.0, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+    }
+    wait(agent.lua_state_agent, 2.0);
+    if now!(agent) {
+        hit(agent, 0, 0, "arml", 13.0, 34, 97, 0, 32, 4.8, 6.0, 0.0, 1.5, 1.0, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+    }
+    wait(agent.lua_state_agent, 3.0);
+    if now!(agent) {
+        AttackModule::clear_all(agent.module_accessor);
+        macros::FT_MOTION_RATE(agent, 0.6);     // recovery plays 1.67x faster (~16 fewer frames of endlag)
+    }
+    at!(agent, 28);
+    if now!(agent) { WorkModule::off_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING); }
 }

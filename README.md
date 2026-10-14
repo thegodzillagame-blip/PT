@@ -19,16 +19,17 @@ ARCropolis + Skyline must already be installed (they are, since the mod loads).
 | jab 1/2 Scratch | hit 5-6 | 3% each, purple claw swipes |
 | jab 3 X-Scissor | hit 9-11 | 6%, 50° |
 | dash Take Down | 7-10 clean 13%, 11-22 late 9% | rides the Trans bone (moves with his travel) |
-| ftilt push kick | 9-11 12%, 12-13 8% | horizontal 361° push |
+| ftilt push kick | 9-11 13% (+body 11%), 12-14 9% | lunging 361° shove, quake on hit |
 | angled ftilt | Charizard's | tip moved off the parked fire bone, no fire effect |
-| utilt Dragon Claw | 7-13 | front -> overhead -> behind |
+| utilt tail flip (Yoshi style) | 7-14 8% | tail whips from behind up over his head |
 | usmash Guillotine | charge f11, hit 15-19 | 16-17% tusk chop |
 | dsmash Dragon Tail | charge f7, tail sweep 14-25, stomp 29-30 | 15% low horizontal (30°) both sides |
 | nair Roar | burst 8-11 11%, ring 12-20 6% | autocancel from f40 |
 | bair dropkick | 8-9 15%, 10-12 11% | |
 | uair tusk swipe | 10-14 13% | |
-| uthrow Dragon Pulse | release f50, 10% | beam column also hits bystanders |
-| dthrow Body Press | release f55, 7% | belly-flop shockwave hits bystanders |
+| uthrow Dragon Pulse | release f50, 10% | plays 1.67x speed, recovery 2.2x |
+| fair | Charizard's hits | endlag 1.67x faster |
+| dthrow Body Press | release f36 (belly lands), 7% | quick get-up after |
 | get-ups | Charizard's | tail tip moved off the fire bone |
 | tail flame | killed every frame | backup for the effect-file edit |
 
