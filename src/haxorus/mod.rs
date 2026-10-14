@@ -10,10 +10,22 @@ mod kept_fixed;
 mod normals;
 mod throws;
 
+/// Nair roar: his body yaw (degrees from facing forward) on each frame of c05attackairn. Authored facing right,
+/// where it turns him toward the camera; facing left the game spins the model 180 so he'd turn away instead.
+const NAIR_YAW: [f32; 53] = [0.,-22.,-38.,-50.,-58.,-60.,-63.,-71.,-85.,-85.,-85.,-85.,-85.,-85.,-85.,-85.,-85.,-85.,-85.,-85.,-85.,-84.,-83.,-80.,-76.,-72.,-67.,-62.,-58.,-53.,-49.,-45.,-42.,-41.,-40.,-40.,-39.,-37.,-35.,-32.,-30.,-27.,-23.,-20.,-17.,-13.,-10.,-8.,-5.,-3.,-1.,0.,0.];
+
 /// Every frame: Charizard's code keeps re-spawning his tail flame - Haxorus has none.
+/// Also mirrors the nair turn when he faces left, so the roar always faces the camera.
 unsafe extern "C" fn haxorus_frame(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
     EffectModule::kill_kind(boma, Hash40::new("plizardon_tail_fire"), false, true);
+    if PostureModule::lr(boma) < 0.0 && MotionModule::motion_kind(boma) == smash::hash40("attack_air_n") {
+        let f = (MotionModule::frame(boma) as usize).min(NAIR_YAW.len() - 1);
+        let rot = Vector3f { x: 0.0, y: -2.0 * NAIR_YAW[f], z: 0.0 };
+        ModelModule::set_joint_rotate(boma, Hash40::new("rot"), &rot,
+            MotionNodeRotateCompose { _address: *MOTION_NODE_ROTATE_COMPOSE_AFTER as u8 },
+            MotionNodeRotateOrder { _address: *MOTION_NODE_ROTATE_ORDER_XYZ as u8 });
+    }
 }
 
 pub fn install() {

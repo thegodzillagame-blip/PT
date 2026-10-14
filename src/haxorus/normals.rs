@@ -229,14 +229,16 @@ pub unsafe extern "C" fn game_attackhi4(agent: &mut L2CAgentBase) {
 pub unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
     at!(agent, 10);
     if now!(agent) { macros::EFFECT_FLIP(agent, Hash40::new("sys_smash_flash"), Hash40::new("sys_smash_flash"), Hash40::new("top"), 0, 12, 8, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ); }
-    at!(agent, 14);
+    at!(agent, 15);
     if now!(agent) {
-        macros::EFFECT_FLIP(agent, Hash40::new("plizardon_smash_arc"), Hash40::new("plizardon_smash_arc"), Hash40::new("top"), 1, 10, 0, -30, -100, -80, 1.35, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ);
+        // Charizard's own up-smash sweep (front -> overhead -> behind), the same path as the tusk chop
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_smash_arc"), Hash40::new("plizardon_smash_arc"), Hash40::new("top"), -1, 18, 1, -178, -20, 98, 1.35, true, *EF_FLIP_YZ);
         tint(agent, 0.9, 0.85, 1.25);
-        macros::LAST_EFFECT_SET_RATE(agent, 1.25);
     }
     at!(agent, 16);
     if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 24.0, 4.5, 0.0, 0.0, 0.0, 1.3); }
+    at!(agent, 19);
+    if now!(agent) { macros::EFFECT_DETACH_KIND(agent, Hash40::new("plizardon_smash_arc"), -1); }
 }
 pub unsafe extern "C" fn sound_attackhi4(agent: &mut L2CAgentBase) {
     at!(agent, 12);
@@ -308,12 +310,12 @@ pub unsafe extern "C" fn game_attackairn(agent: &mut L2CAgentBase) {
     if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING); }
     at!(agent, 8);
     if now!(agent) {
-        // one round burst centred on his chest (fixed to his body origin, not a bone, so it's a clean circle)
-        hit(agent, 0, 0, "top", 11.0, 65, 85, 0, 45, 11.0, 0.0, 13.0, 0.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        // one round burst centred on his chest: hits the same all the way around him, launches up and away
+        hit(agent, 0, 0, "top", 11.0, 55, 85, 0, 45, 10.5, 0.0, 12.0, 0.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 12);
     if now!(agent) {
-        hit(agent, 0, 0, "top", 6.0, 70, 70, 0, 35, 12.5, 0.0, 13.0, 0.0, 0.8, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hit(agent, 0, 0, "top", 6.0, 70, 70, 0, 35, 12.0, 0.0, 12.0, 0.0, 0.8, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 21);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
