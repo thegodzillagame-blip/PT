@@ -308,13 +308,12 @@ pub unsafe extern "C" fn game_attackairn(agent: &mut L2CAgentBase) {
     if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING); }
     at!(agent, 8);
     if now!(agent) {
-        hit(agent, 0, 0, "bust", 11.0, 361, 85, 0, 40, 8.5, 0.0, 0.0, 0.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
-        hit(agent, 1, 0, "head", 11.0, 361, 85, 0, 40, 6.0, 0.0, 0.0, 0.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        // one round burst centred on his chest (fixed to his body origin, not a bone, so it's a clean circle)
+        hit(agent, 0, 0, "top", 11.0, 65, 85, 0, 45, 11.0, 0.0, 13.0, 0.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 12);
     if now!(agent) {
-        AttackModule::clear(agent.module_accessor, 1, false);
-        hit(agent, 0, 0, "bust", 6.0, 361, 70, 0, 30, 10.5, 0.0, 0.0, 0.0, 0.8, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hit(agent, 0, 0, "top", 6.0, 70, 70, 0, 35, 12.5, 0.0, 13.0, 0.0, 0.8, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 21);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
@@ -327,12 +326,13 @@ pub unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
         fx_follow(agent, "plizardon_roar", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
         purple(agent);
     }
+    // rings placed on his origin (not the twisting chest bone) and turned flat to the screen
     at!(agent, 8);
-    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 0.8); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 13.0, 0.0, 0.0, 0.0, 90.0, 0.8); purple(agent); }
     at!(agent, 12);
-    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 1.1); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 13.0, 0.0, 0.0, 0.0, 90.0, 1.1); purple(agent); }
     at!(agent, 16);
-    if now!(agent) { fx(agent, "sys_crown", "bust", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 1.4); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 13.0, 0.0, 0.0, 0.0, 90.0, 1.4); purple(agent); }
 }
 pub unsafe extern "C" fn sound_attackairn(agent: &mut L2CAgentBase) {
     at!(agent, 7);
@@ -377,7 +377,6 @@ pub unsafe extern "C" fn effect_attackairb(agent: &mut L2CAgentBase) {
         fx(agent, "sys_crown", "top", 0.0, 9.5, -13.5, 0.0, 0.0, 90.0, 1.0);
         tint(agent, 1.0, 0.7, 0.3);
         fx(agent, "sys_smash_flash_s", "top", 0.0, 9.5, -13.0, 0.0, 0.0, 0.0, 1.6);
-        fx(agent, "sys_bomb_a", "top", 0.0, 9.5, -14.0, 0.0, 0.0, 0.0, 0.55);
     }
 }
 pub unsafe extern "C" fn expression_attackairb(agent: &mut L2CAgentBase) {
