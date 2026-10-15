@@ -265,17 +265,18 @@ pub unsafe extern "C" fn effect_attacklw4(agent: &mut L2CAgentBase) {
     at!(agent, 12);
     if now!(agent) {
         fx(agent, "sys_attack_impact", "top", 0.0, 1.5, 1.0, 0.0, 0.0, 0.0, 1.8); red(agent);
-        fx(agent, "sys_quake", "top", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.9);
+        fx(agent, "sys_quake", "top", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
         fx(agent, "sys_bomb_b", "top", 0.0, 0.5, 1.0, 0.0, 0.0, 0.0, 0.8); tint(agent, 0.55, 0.42, 0.3);
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_crown"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 2.2, 0, 0, 0, 0, 0, 0, false);
+        // ring sized to the quake hitbox (reaches ~22 each side: crown 1.0 ~ radius 21)
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_crown"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.05, 0, 0, 0, 0, 0, 0, false);
         macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, 9, 0, 0, 0, 1.3, 0, 0, 0, 0, 0, 0, false);
         macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, -9, 0, 180, 0, 1.3, 0, 0, 0, 0, 0, 0, false);
         macros::QUAKE(agent, *CAMERA_QUAKE_KIND_L);
     }
     at!(agent, 14);
     if now!(agent) {
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, 15, 0, 0, 0, 1.1, 0, 0, 0, 0, 0, 0, false);
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, -15, 0, 0, 0, 1.1, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, 19, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, -19, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
     }
 }
 pub unsafe extern "C" fn sound_attacklw4(agent: &mut L2CAgentBase) {
