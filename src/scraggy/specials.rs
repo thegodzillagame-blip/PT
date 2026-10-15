@@ -17,6 +17,10 @@ macro_rules! at { ($a:ident, $f:expr) => { frame($a.lua_state_agent, $f as f32) 
 macro_rules! now { ($a:ident) => { macros::is_excute($a) } }
 
 // ======================================================================= NEUTRAL B: FOCUS PUNCH
+/// the wind-up plays at double speed, so a tapped (uncharged) Focus Punch comes out fast
+pub unsafe extern "C" fn game_specialnstart(agent: &mut L2CAgentBase) {
+    if now!(agent) { macros::FT_MOTION_RATE(agent, 0.5); }
+}
 pub unsafe extern "C" fn effect_specialnstart(agent: &mut L2CAgentBase) {
     at!(agent, 6);
     if now!(agent) { fx_follow(agent, "sys_smash_flash_s", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6); yellow(agent); }

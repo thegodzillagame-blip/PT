@@ -74,13 +74,13 @@ pub unsafe extern "C" fn game_attack13(_agent: &mut L2CAgentBase) {}
 pub unsafe extern "C" fn game_attackdash(agent: &mut L2CAgentBase) {
     at!(agent, 10);
     if now!(agent) {
-        b(agent, 0, "head", 9.0, 65, 70, 60, 3.6, 1.2, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
-        b(agent, 1, "bust", 9.0, 65, 70, 60, 3.2, 1.2, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        b(agent, 0, "head", 9.0, 45, 70, 60, 3.6, 1.2, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
+        b(agent, 1, "bust", 9.0, 45, 70, 60, 3.2, 1.2, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 13);
     if now!(agent) {
-        b(agent, 0, "head", 6.0, 70, 60, 50, 3.2, 1.0, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
-        b(agent, 1, "bust", 6.0, 70, 60, 50, 2.8, 1.0, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        b(agent, 0, "head", 6.0, 50, 60, 50, 3.2, 1.0, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
+        b(agent, 1, "bust", 6.0, 50, 60, 50, 2.8, 1.0, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 18);
     if now!(agent) { clear(agent); }
@@ -105,16 +105,16 @@ pub unsafe extern "C" fn sound_attackdash(agent: &mut L2CAgentBase) {
 pub unsafe extern "C" fn game_attacks3(agent: &mut L2CAgentBase) {
     at!(agent, 9);
     if now!(agent) {
-        b(agent, 0, "tail2", 8.0, 361, 90, 30, 3.0, 1.1, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
-        b(agent, 1, "tail1", 8.0, 361, 90, 30, 2.6, 1.1, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
-        hit(agent, 2, 0, "top", 8.0, 361, 90, 0, 30, 2.6, 0.0, 4.0, 6.0, 1.1, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        b(agent, 0, "tail2", 8.0, 361, 90, 30, 4.2, 1.1, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        b(agent, 1, "tail1", 8.0, 361, 90, 30, 3.6, 1.1, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        hit_cap(agent, 2, 0, "top", 8.0, 361, 90, 0, 30, 3.2, 4.0, 4.0, 4.0, 10.0, 1.1, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
     }
     at!(agent, 12);
     if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.7); }   // less endlag
 }
 pub unsafe extern "C" fn effect_attacks3(agent: &mut L2CAgentBase) {
     at!(agent, 8);
-    if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_b"), Hash40::new("sys_attack_arc_b"), Hash40::new("top"), 0, 4, 2, 0, 0, 0, 0.7, true, *EF_FLIP_YZ); orange(agent); }
+    if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_b"), Hash40::new("sys_attack_arc_b"), Hash40::new("top"), 0, 4, 4, 0, 0, 0, 1.05, true, *EF_FLIP_YZ); orange(agent); }
 }
 pub unsafe extern "C" fn sound_attacks3(agent: &mut L2CAgentBase) {
     at!(agent, 7);
@@ -174,8 +174,8 @@ pub unsafe extern "C" fn game_attacks4(agent: &mut L2CAgentBase) {
     if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_FLAG_START_SMASH_HOLD); }
     at!(agent, 18);
     if now!(agent) {
-        b(agent, 0, "head", 15.0, 361, 95, 32, 4.0, 1.4, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
-        hit(agent, 1, 0, "top", 13.0, 361, 95, 0, 30, 3.0, 0.0, 5.0, 4.0, 1.2, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        b(agent, 0, "head", 15.0, 361, 95, 32, 5.2, 1.4, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
+        hit_cap(agent, 1, 0, "top", 13.0, 361, 95, 0, 30, 3.8, 5.0, 3.0, 5.5, 8.0, 1.2, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 22);
     if now!(agent) { clear(agent); }
@@ -185,11 +185,12 @@ pub unsafe extern "C" fn effect_attacks4(agent: &mut L2CAgentBase) {
     if now!(agent) { macros::EFFECT_FLIP(agent, Hash40::new("sys_smash_flash"), Hash40::new("sys_smash_flash"), Hash40::new("top"), 0, 6, 0, 0, 0, 0, 0.7, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ); }
     at!(agent, 17);
     if now!(agent) {
-        fx_follow(agent, "sys_attack_speedline", "head", 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 0.8); orange(agent);
-        macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -2, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
+        fx_follow(agent, "sys_attack_speedline", "head", 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.3); orange(agent);
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_line_b"), Hash40::new("sys_attack_line_b"), Hash40::new("top"), 0, 5.5, 0, 0, 0, 0, 1.3, true, *EF_FLIP_YZ); orange(agent);
+        macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -2, 0, 0, 0, 1.2, 0, 0, 0, 0, 0, 0, false);
     }
     at!(agent, 18);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.5, 8.5, 0.0, 0.0, 0.0, 1.1); red(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.5, 8.5, 0.0, 0.0, 0.0, 1.7); red(agent); fx(agent, "sys_crown", "top", 0.0, 5.5, 8.5, 0.0, 90.0, 90.0, 0.6); red(agent); }
 }
 pub unsafe extern "C" fn sound_attacks4(agent: &mut L2CAgentBase) {
     at!(agent, 15);
@@ -204,8 +205,8 @@ pub unsafe extern "C" fn game_attackhi4(agent: &mut L2CAgentBase) {
     if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_FLAG_START_SMASH_HOLD); }
     at!(agent, 8);
     if now!(agent) {
-        b(agent, 0, "head", 14.0, 85, 95, 35, 3.8, 1.3, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
-        hit(agent, 1, 0, "top", 12.0, 90, 95, 0, 32, 3.0, 0.0, 7.0, 0.0, 1.1, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        b(agent, 0, "head", 14.0, 85, 95, 35, 5.2, 1.3, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
+        hit_cap(agent, 1, 0, "top", 12.0, 90, 95, 0, 32, 4.5, 7.0, -3.0, 9.0, 3.0, 1.1, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 11);
     if now!(agent) { AttackModule::clear(agent.module_accessor, 1, false); }
@@ -217,9 +218,16 @@ pub unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
     if now!(agent) { macros::EFFECT_FLIP(agent, Hash40::new("sys_smash_flash"), Hash40::new("sys_smash_flash"), Hash40::new("top"), 0, 6, 0, 0, 0, 0, 0.7, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ); }
     at!(agent, 8);
     if now!(agent) {
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 9, 0, 0, -52, -88, 0.9, true, *EF_FLIP_YZ); orange(agent);
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 0.7, 0, 0, 0, 0, 0, 0, false);
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 10, 0, 0, -52, -88, 1.6, true, *EF_FLIP_YZ); orange(agent);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.2, 0, 0, 0, 0, 0, 0, false);
     }
+    at!(agent, 10);
+    if now!(agent) {
+        fx(agent, "sys_attack_impact", "top", 0.0, 12.0, 1.0, 0.0, 0.0, 0.0, 1.4); red(agent);
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_b"), Hash40::new("sys_attack_arc_b"), Hash40::new("top"), 0, 9, 3, 0, 0, 0, 1.3, true, *EF_FLIP_YZ); orange(agent);
+    }
+    at!(agent, 19);
+    if now!(agent) { macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, 2, 0, 0, 0, 1.0, 0, 0, 0, 0, 0, 0, false); }
 }
 pub unsafe extern "C" fn sound_attackhi4(agent: &mut L2CAgentBase) {
     at!(agent, 7);
@@ -236,12 +244,12 @@ pub unsafe extern "C" fn game_attacklw4(agent: &mut L2CAgentBase) {
     at!(agent, 11);
     if now!(agent) {
         // the fist on the way down
-        b(agent, 0, "handr", 15.0, 60, 92, 35, 4.2, 1.3, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+        b(agent, 0, "handr", 15.0, 60, 92, 35, 5.2, 1.3, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
     }
     at!(agent, 12);
     if now!(agent) {
         // the quake: a wide low band both sides of him
-        hit_cap(agent, 1, 0, "top", 13.0, 70, 90, 0, 40, 4.0, 2.0, -13.0, 2.0, 13.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hit_cap(agent, 1, 0, "top", 13.0, 70, 90, 0, 40, 5.0, 2.5, -17.0, 2.5, 17.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
         AttackModule::set_attack_height_all(agent.module_accessor, AttackHeight(*ATTACK_HEIGHT_LOW), false);
     }
     at!(agent, 13);
@@ -256,18 +264,18 @@ pub unsafe extern "C" fn effect_attacklw4(agent: &mut L2CAgentBase) {
     if now!(agent) { fx_follow(agent, "sys_attack_line", "handr", 0.0, 0.0, 0.0, 90.0, 0.0, 0.0, 0.7); orange(agent); }
     at!(agent, 12);
     if now!(agent) {
-        fx(agent, "sys_attack_impact", "top", 0.0, 1.5, 1.0, 0.0, 0.0, 0.0, 1.2); red(agent);
-        fx(agent, "sys_quake", "top", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.3);
-        fx(agent, "sys_bomb_b", "top", 0.0, 0.5, 1.0, 0.0, 0.0, 0.0, 0.5); tint(agent, 0.55, 0.42, 0.3);
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_crown"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.4, 0, 0, 0, 0, 0, 0, false);
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, 7, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, -7, 0, 180, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
-        macros::QUAKE(agent, *CAMERA_QUAKE_KIND_M);
+        fx(agent, "sys_attack_impact", "top", 0.0, 1.5, 1.0, 0.0, 0.0, 0.0, 1.8); red(agent);
+        fx(agent, "sys_quake", "top", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.9);
+        fx(agent, "sys_bomb_b", "top", 0.0, 0.5, 1.0, 0.0, 0.0, 0.0, 0.8); tint(agent, 0.55, 0.42, 0.3);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_crown"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 2.2, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, 9, 0, 0, 0, 1.3, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, -9, 0, 180, 0, 1.3, 0, 0, 0, 0, 0, 0, false);
+        macros::QUAKE(agent, *CAMERA_QUAKE_KIND_L);
     }
     at!(agent, 14);
     if now!(agent) {
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, 11, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
-        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, -11, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, 15, 0, 0, 0, 1.1, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, -15, 0, 0, 0, 1.1, 0, 0, 0, 0, 0, 0, false);
     }
 }
 pub unsafe extern "C" fn sound_attacklw4(agent: &mut L2CAgentBase) {

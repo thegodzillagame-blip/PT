@@ -121,6 +121,21 @@ unsafe extern "C" fn scraggy_frame(fighter: &mut L2CFighterCommon) {
     // no Water Gun water, ever
     ArticleModule::remove_exist(boma, *FIGHTER_PZENIGAME_GENERATE_ARTICLE_WATER, ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL));
     // Headbutt: a short head-first flight, then the miss roll (Withdraw would keep sliding)
+    // Headbutt into a wall: do the pop-back (the on-hit bounce) instead of Withdraw's wall reel
+    // (also catches the first frames after the loop, in case Squirtle's status already switched to its wall reaction)
+    let prev = StatusModule::prev_status_kind(boma, 0);
+    let just_left_loop = prev == *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_LOOP && status != *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_HIT
+        && status != *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_LOOP && MotionModule::frame(boma) < 3.0
+        && !(status == *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_END && HB_FRAMES[e] >= HB_FLIGHT);
+    if status == *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_LOOP || just_left_loop
+        || (status == *FIGHTER_STATUS_KIND_SPECIAL_S && MotionModule::frame(boma) >= 6.0) {
+        let lr = PostureModule::lr(boma);
+        let side = if just_left_loop { *GROUND_TOUCH_FLAG_RIGHT | *GROUND_TOUCH_FLAG_LEFT }   // the reel may have turned him round
+                   else if lr > 0.0 { *GROUND_TOUCH_FLAG_RIGHT } else { *GROUND_TOUCH_FLAG_LEFT };
+        if GroundModule::is_touch(boma, side as u32) {
+            StatusModule::change_status_request_from_script(boma, *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_HIT, false);
+        }
+    }
     if status == *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_LOOP {
         HB_FRAMES[e] += 1;
         // late in the flight the headbutt is a sourspot: 5%, smaller, sends up and away instead of hard forward
@@ -239,6 +254,8 @@ pub fn install() {
         .effect_acmd("effect_throwb", effect_throwb, Low)
         .sound_acmd("sound_throwb", sound_throwb, Low)
         // neutral B: Focus Punch (ground + air)
+        .game_acmd("game_specialnstart", game_specialnstart, Low)
+        .game_acmd("game_specialairnstart", game_specialnstart, Low)
         .effect_acmd("effect_specialnstart", effect_specialnstart, Low)
         .sound_acmd("sound_specialnstart", sound_specialnstart, Low)
         .effect_acmd("effect_specialairnstart", effect_specialnstart, Low)

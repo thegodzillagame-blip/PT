@@ -46,13 +46,13 @@ Tilts and aerials (not bair) run their recovery faster once the hitbox ends (FT_
 | move | frames (anim) | notes |
 |---|---|---|
 | jab 1/2 | 5-6 2.5%, 4-5 4% | two punches; jab 3 blocked in the frame hook |
-| dash attack trip | 10-12 9%, 13-17 6% | belly-flop slide, ~26 travel (root motion) |
+| dash attack trip | 10-12 9% 45°, 13-17 6% 50° | belly-flop slide, ~26 travel (root motion) |
 | ftilt tail whip | 9-11 8% | angled ftilts/fsmashes stay Squirtle's (no Scraggy anims) |
 | utilt head thrust | 8-11 6% 90° | juggle |
-| dtilt ball roll | 8-11 6%, 12-16 4% | low; rolls ~13.5 forward (root motion) |
+| dtilt ball roll | 8-11 6%, 12-16 4% | low; rolls ~18 forward (root motion) |
 | fsmash lunge | hold f14, 18-21 15% | long-neck headbutt (old lunge mixed with the new coil) |
 | usmash hop arc | hold f6, 8-13 14% | coils leaning back, head arcs back -> over -> front |
-| dsmash ground pound | hold f6, fist 11-12 15% 60°, quake 12-15 13% 70° | fist raised overhead, slams the floor; quake band ±13 both sides, low, camera shake |
+| dsmash ground pound | hold f6, fist 11-12 15% 60°, quake 12-15 13% 70° | fist raised overhead, slams the floor; quake band ±17 both sides, low, big camera shake |
 | nair spin | 7-11 9%, 12-28 5% | |
 | fair dropkick | 9-12 11% | original (pre-rebuild) animation |
 | bair head spike | 9-11 10% 270° | spike |
@@ -61,6 +61,6 @@ Tilts and aerials (not bair) run their recovery faster once the hitbox ends (FT_
 | fthrow headbutt | release 11, 8% | |
 | dthrow tail trip | release 17, 6% | victim is marked on release; a hook on every fighter trips them (SLIP -> prone) as soon as they leave THROWN |
 | bthrow back roll | release 14, 9% 135° | |
-| neutral B Focus Punch | Water Gun charge; punch 3-6 | 6% -> 22% with charge (75f full), 70°, bkb 15-40 + 10-25f extra hitstun, jump-cancelable on hit; charge kept between uses; body glows hotter/faster with charge, full charge flashes + glints while stored |
-| side B Headbutt | head hitbox from start f7, 10%; sourspot 5% 70° from flight frame 13 | 22f flight, then the miss roll; bounces off on hit |
-| up B Brick Break | smash 10-11 12% spike, rise 12-20 5% | smashes a rock (mesh pzenigame_Rock, shown f0-10), rises ~45 (root motion) to f28, falls with control from f30 | |
+| neutral B Focus Punch | Water Gun charge (wind-up at 2x speed); punch 3-6 | 6% -> 22% with charge (75f full), 70°, bkb 15-40 + 10-25f extra hitstun, jump-cancelable on hit; charge kept between uses; body glows hotter/faster with charge, full charge flashes + glints while stored |
+| side B Headbutt | head hitbox from start f7, 10%; sourspot 5% 70° from flight frame 13 | 22f flight, then the miss roll; bounces off on hit or when he hits a wall |
+| up B Brick Break | smash 10-11 12% spike, rise 12-20 5% | smashes a rock (mesh pzenigame_Rock, shown f0-10), rises 56 / 10.5 forward on one smooth ease-out curve to f28, falls with control from f30 | |

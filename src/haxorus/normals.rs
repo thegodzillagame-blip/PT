@@ -373,7 +373,7 @@ pub unsafe extern "C" fn game_attackairb(agent: &mut L2CAgentBase) {
         hit(agent, 1, 0, "top", 11.0, 361, 85, 0, 30, 4.5, 0.0, 5.5, -12.0, 1.0, *ATTACK_LR_CHECK_B, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
         AttackModule::clear(agent.module_accessor, 2, false);
     }
-    at!(agent, 13);
+    at!(agent, 17);   // late hit lasts longer (was cleared on 13)
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
     at!(agent, 30);
     if now!(agent) { WorkModule::off_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING); }
