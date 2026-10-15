@@ -179,66 +179,82 @@ pub unsafe extern "C" fn expression_attacks3(agent: &mut L2CAgentBase) {
 }
 
 // ===================================================================== U-TILT: tail flip (Yoshi style) - tail whips up from behind, over his head
+// tail path (top space): f6 behind-low (4,-15) -> f7 behind-high (18,-13) -> f8 overhead (22,2) -> f9 front (19,8), rests in front after
 pub unsafe extern "C" fn game_attackhi3(agent: &mut L2CAgentBase) {
+    at!(agent, 6);
+    if now!(agent) {
+        // rising behind him: pops them up into the arc
+        hit_cap(agent, 0, 0, "top", 7.0, 95, 70, 0, 60, 5.0, 5.0, -14.0, 17.0, -12.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        hit(agent, 1, 0, "top", 7.0, 95, 70, 0, 60, 4.5, 0.0, 9.0, -7.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+    }
     at!(agent, 7);
     if now!(agent) {
-        hit(agent, 0, 0, "tail4", 8.0, 95, 75, 0, 62, 5.0, 0.0, 0.0, 0.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
-        hit(agent, 1, 0, "tail3", 8.0, 95, 75, 0, 62, 4.5, 0.0, 0.0, 0.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
-        hit(agent, 2, 0, "tail2", 8.0, 95, 75, 0, 62, 4.0, 0.0, 0.0, 0.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        // the overhead sweep - the main hit, straight up for juggles
+        hit_cap(agent, 0, 0, "top", 9.0, 88, 78, 0, 58, 6.0, 18.0, -11.0, 22.0, 3.0, 1.1, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        hit_cap(agent, 1, 0, "top", 9.0, 88, 78, 0, 58, 5.0, 14.0, -8.0, 17.0, 1.0, 1.1, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
     }
-    at!(agent, 15);
+    at!(agent, 9);
+    if now!(agent) {
+        hit_cap(agent, 0, 0, "top", 8.0, 80, 75, 0, 55, 5.5, 21.0, 2.0, 17.0, 9.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
+        AttackModule::clear(agent.module_accessor, 1, false);
+    }
+    at!(agent, 11);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
 }
 pub unsafe extern "C" fn effect_attackhi3(agent: &mut L2CAgentBase) {
     at!(agent, 4);
     if now!(agent) { macros::FOOT_EFFECT(agent, Hash40::new("sys_turn_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.1, 0, 0, 0, 0, 0, 0, false); }
-    at!(agent, 7);
+    at!(agent, 6);
     if now!(agent) {
-        // Yoshi's own up-tilt arc, scaled up for the bigger tail
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 1, 14, -2, 0, 52, 88, 1.6, true, *EF_FLIP_YZ);
-        purple(agent);
+        // Charizard's smash arc (was on up smash) trailing the tail round over his head
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_smash_arc"), Hash40::new("plizardon_smash_arc"), Hash40::new("top"), 0, 12, -1, -178, -20, 98, 1.45, true, *EF_FLIP_YZ);
+        tint(agent, 0.9, 0.85, 1.25);
     }
+    at!(agent, 10);
+    if now!(agent) { macros::EFFECT_DETACH_KIND(agent, Hash40::new("plizardon_smash_arc"), -1); }
 }
 pub unsafe extern "C" fn sound_attackhi3(agent: &mut L2CAgentBase) {
-    at!(agent, 6);
+    at!(agent, 5);
     if now!(agent) { se(agent, "se_plizardon_tailswing"); }
 }
 
 // ===================================================================== U-SMASH: Guillotine (tusk axe chop, front -> up -> back)
+// tusk path (top space): f14 (9,7) -> f15 (14,10) -> f16 (25,5) -> f17 (22,-2)
 pub unsafe extern "C" fn game_attackhi4(agent: &mut L2CAgentBase) {
     at!(agent, 11);
     if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_FLAG_START_SMASH_HOLD); }
-    at!(agent, 15);
+    at!(agent, 14);
     if now!(agent) {
-        hit(agent, 0, 0, "top", 16.0, 85, 95, 0, 38, 5.5, 0.0, 14.0, 9.5, 1.2, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
-        hit(agent, 1, 0, "top", 16.0, 85, 95, 0, 38, 5.0, 0.0, 9.0, 5.0, 1.2, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
+        // scoop in front of him, low to chest height
+        hit_cap(agent, 0, 0, "top", 16.0, 88, 92, 0, 40, 6.0, 6.0, 10.0, 14.0, 10.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
+        hit(agent, 1, 0, "top", 16.0, 88, 92, 0, 40, 5.0, 0.0, 10.0, 4.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
     }
     at!(agent, 16);
     if now!(agent) {
-        hit(agent, 0, 0, "top", 17.0, 88, 95, 0, 38, 6.0, 0.0, 24.0, 4.5, 1.2, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
-        hit(agent, 1, 0, "top", 17.0, 88, 95, 0, 38, 5.0, 0.0, 18.5, 2.0, 1.2, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
+        // the chop sweeping up overhead: sweetspot on the tusks
+        hit_cap(agent, 0, 0, "top", 18.0, 90, 95, 0, 40, 7.0, 15.0, 9.0, 25.0, 4.0, 1.3, *ATTACK_LR_CHECK_POS, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
+        hit(agent, 1, 0, "top", 16.0, 90, 92, 0, 40, 5.5, 0.0, 17.0, 1.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
     }
     at!(agent, 17);
     if now!(agent) {
-        hit(agent, 0, 0, "top", 14.0, 95, 90, 0, 35, 6.0, 0.0, 22.0, -1.5, 1.1, *ATTACK_LR_CHECK_F, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
+        // follow-through behind his head
+        hit_cap(agent, 0, 0, "top", 13.0, 100, 88, 0, 35, 6.5, 24.0, 3.0, 21.0, -3.0, 1.1, *ATTACK_LR_CHECK_POS, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_HEAD);
         AttackModule::clear(agent.module_accessor, 1, false);
     }
-    at!(agent, 20);
+    at!(agent, 19);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
 }
 pub unsafe extern "C" fn effect_attackhi4(agent: &mut L2CAgentBase) {
     at!(agent, 10);
     if now!(agent) { macros::EFFECT_FLIP(agent, Hash40::new("sys_smash_flash"), Hash40::new("sys_smash_flash"), Hash40::new("top"), 0, 12, 8, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ); }
-    at!(agent, 15);
+    at!(agent, 14);
     if now!(agent) {
-        // Charizard's own up-smash sweep (front -> overhead -> behind), the same path as the tusk chop
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_smash_arc"), Hash40::new("plizardon_smash_arc"), Hash40::new("top"), -1, 18, 1, -178, -20, 98, 1.35, true, *EF_FLIP_YZ);
-        tint(agent, 0.9, 0.85, 1.25);
+        // Yoshi's up-tilt arc (was on up tilt) following the tusk chop
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 1, 15, 2, 0, 52, 88, 1.45, true, *EF_FLIP_YZ);
+        purple(agent);
     }
     at!(agent, 16);
     if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 24.0, 4.5, 0.0, 0.0, 0.0, 1.3); }
-    at!(agent, 19);
-    if now!(agent) { macros::EFFECT_DETACH_KIND(agent, Hash40::new("plizardon_smash_arc"), -1); }
 }
 pub unsafe extern "C" fn sound_attackhi4(agent: &mut L2CAgentBase) {
     at!(agent, 12);
@@ -328,13 +344,13 @@ pub unsafe extern "C" fn effect_attackairn(agent: &mut L2CAgentBase) {
         fx_follow(agent, "plizardon_roar", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
         purple(agent);
     }
-    // rings placed on his origin (not the twisting chest bone) and turned flat to the screen
+    // rings placed on his origin, flat to the screen, sized to the hitbox (burst r10.5, ring r12)
     at!(agent, 8);
-    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 13.0, 0.0, 0.0, 0.0, 90.0, 0.8); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 12.0, 0.0, 0.0, 0.0, 90.0, 0.5); purple(agent); }
     at!(agent, 12);
-    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 13.0, 0.0, 0.0, 0.0, 90.0, 1.1); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 12.0, 0.0, 0.0, 0.0, 90.0, 0.62); purple(agent); }
     at!(agent, 16);
-    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 13.0, 0.0, 0.0, 0.0, 90.0, 1.4); purple(agent); }
+    if now!(agent) { fx(agent, "sys_crown", "top", 0.0, 12.0, 0.0, 0.0, 0.0, 90.0, 0.68); purple(agent); }
 }
 pub unsafe extern "C" fn sound_attackairn(agent: &mut L2CAgentBase) {
     at!(agent, 7);

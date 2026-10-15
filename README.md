@@ -21,10 +21,10 @@ ARCropolis + Skyline must already be installed (they are, since the mod loads).
 | dash Take Down | 7-10 clean 13%, 11-22 late 9% | rides the Trans bone (moves with his travel) |
 | ftilt push kick | 9-11 13% (+body 11%), 12-14 9% | lunging 361° shove, quake on hit |
 | angled ftilt | Charizard's | tip moved off the parked fire bone, no fire effect |
-| utilt tail flip (Yoshi style) | 7-14 8% | tail whips from behind up over his head |
-| usmash Guillotine | charge f11, hit 15-19 | 16-17% tusk chop |
+| utilt tail flip (Yoshi style) | 6 7%, 7-8 9%, 9-10 8% | tail whips from behind up over his head; Charizard's smash arc trails it |
+| usmash Guillotine | charge f11, scoop 14-15 16%, chop 16 18%, late 17-18 13% | tusk chop front -> overhead -> behind; Yoshi arc trails it |
 | dsmash Dragon Tail | charge f7, tail sweep 14-25, stomp 29-30 | 15% low horizontal (30°) both sides |
-| nair Roar | burst 8-11 11%, ring 12-20 6% | autocancel from f40 |
+| nair Roar | burst 8-11 11%, ring 12-20 6% | autocancel from f40, half landing lag (config_param.toml), rings sized to the hitbox |
 | bair dropkick | 8-9 15%, 10-12 11% | |
 | uair tusk swipe | 10-14 13% | |
 | uthrow Dragon Pulse | release f50, 10% | plays 1.67x speed, recovery 2.2x |
@@ -33,7 +33,9 @@ ARCropolis + Skyline must already be installed (they are, since the mod loads).
 | get-ups | Charizard's | tail tip moved off the fire bone |
 | tail flame | killed every frame | backup for the effect-file edit |
 
-Not yet: specials (Dragon Dance / Outrage / Giga Impact still run Charizard's statuses), nair facing-left camera turn.
+| neutral B Dragon Dance | hold to dance 60f+ | release: +30% movement speed for 5 s and +40% damage on the NEXT attack only; no breath |
+| side B Outrage | 2% autolink rakes (rehit 4), finisher 7% | ends after 4 rakes or a short run; no explosion, no recoil, no blow-back; same in the air |
+| up B Giga Impact | 4% scoop f9, 1.5% carry f13-46 | carries them up, the dive drags them down (1.5% autolink), crash 9% launches |
 
 ## Building
 Push to GitHub - `.github/workflows/build.yml` builds the `.nro` with cargo-skyline.
