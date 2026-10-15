@@ -11,7 +11,12 @@ mod throws;
 
 static mut FP_CHARGE: [i32; 8] = [0; 8];      // Focus Punch charge frames (kept between uses, like DK's punch)
 static mut HB_FRAMES: [i32; 8] = [0; 8];      // frames spent flying in the Headbutt
-const FP_FULL: i32 = 75;                      // frames of charging for a full-power punch
+const FP_FULL: i32 = 75;
+const SQUIRTLE_WATER_FX: [&str; 24] = ["pzenigame_dash", "pzenigame_run", "pzenigame_brake", "pzenigame_dash_atk", "pzenigame_mouth_water",
+    "pzenigame_water_smash", "pzenigame_water_smash_r", "pzenigame_water_ripple", "pzenigame_water_attack_spin", "pzenigame_water_attack",
+    "pzenigame_water_cutter", "pzenigame_water_cutter_r", "pzenigame_atk_hi4", "pzenigame_throw_b", "pzenigame_mizuteppo_shoot",
+    "pzenigame_mizuteppo_hold", "pzenigame_mizuteppo_hit", "pzenigame_mizuteppo_max", "pzenigame_takinobori", "pzenigame_takinobori_start",
+    "pzenigame_takinobori_end", "pzenigame_takinobori_splash", "pzenigame_karanikomoru", "pzenigame_karanikomoru_line"];                      // frames of charging for a full-power punch
 const HB_FLIGHT: i32 = 12;                    // how long the head-first flight lasts before a miss turns into the roll
 
 pub(crate) unsafe fn focus_charge(e: usize) -> f32 { (FP_CHARGE[e] as f32 / FP_FULL as f32).min(1.0) }
@@ -49,6 +54,8 @@ unsafe extern "C" fn scraggy_frame(fighter: &mut L2CFighterCommon) {
     let m = MotionModule::motion_kind(boma);
     let rock = (m == smash::hash40("special_hi") || m == smash::hash40("special_air_hi")) && MotionModule::frame(boma) <= 10.0;
     ModelModule::set_mesh_visibility(boma, smash::phx::Hash40::new("pzenigame_rock"), rock);
+    // Scraggy has nothing to do with water: clear any of Squirtle's own water effects that a vanilla script still spawns
+    for name in SQUIRTLE_WATER_FX { EffectModule::kill_kind(boma, smash::phx::Hash40::new(name), false, true); }
     // no Water Gun water, ever
     ArticleModule::remove_exist(boma, *FIGHTER_PZENIGAME_GENERATE_ARTICLE_WATER, ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL));
     // Headbutt: a short head-first flight, then the miss roll (Withdraw would keep sliding)
@@ -75,6 +82,15 @@ pub fn install() {
     Agent::new("pzenigame")
         .set_costume(crate::SLOTS.to_vec())
         .on_line(Main, scraggy_frame)
+        // movement: dust, not water
+        .effect_acmd("effect_dash", effect_dash, Low)
+        .effect_acmd("effect_turndash", effect_turndash, Low)
+        .effect_acmd("effect_run", effect_run, Low)
+        .effect_acmd("effect_runbrake", effect_runbrake, Low)
+        .effect_acmd("effect_runbraker", effect_runbrake, Low)
+        .effect_acmd("effect_runbrakel", effect_runbrake, Low)
+        .effect_acmd("effect_turnrun", effect_turnrun, Low)
+        .effect_acmd("effect_turnrunbrake", effect_runbrake, Low)
         // jab (2 hits)
         .game_acmd("game_attack11", game_attack11, Low)
         .effect_acmd("effect_attack11", effect_attack11, Low)

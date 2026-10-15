@@ -395,3 +395,33 @@ pub unsafe extern "C" fn sound_attackairlw(agent: &mut L2CAgentBase) {
     at!(agent, 7);
     if now!(agent) { se(agent, "se_pzenigame_swing_l"); se(agent, "vc_pzenigame_attack06"); }
 }
+
+// ===================================================================== MOVEMENT: plain dust instead of Squirtle's water splashes
+unsafe fn dust(agent: &mut L2CAgentBase, kind: &str, x: f32, z: f32, scale: f32) {
+    macros::FOOT_EFFECT(agent, Hash40::new(kind), Hash40::new("top"), x, 0, z, 0, 0, 0, scale, 0, 0, 0, 0, 0, 0, false);
+}
+pub unsafe extern "C" fn effect_dash(agent: &mut L2CAgentBase) {
+    if now!(agent) { dust(agent, "sys_dash_smoke", -2.0, 0.0, 0.7); }
+    at!(agent, 12);
+    if now!(agent) { dust(agent, "sys_run_smoke", 0.0, 0.0, 0.6); }
+}
+pub unsafe extern "C" fn effect_turndash(agent: &mut L2CAgentBase) {
+    at!(agent, 3);
+    if now!(agent) { dust(agent, "sys_turn_smoke", 0.0, 0.0, 0.6); }
+    at!(agent, 12);
+    if now!(agent) { dust(agent, "sys_run_smoke", 0.0, 0.0, 0.6); }
+}
+pub unsafe extern "C" fn effect_run(agent: &mut L2CAgentBase) {
+    for f in [2.0f32, 10.0] {
+        frame(agent.lua_state_agent, f);
+        if now!(agent) { dust(agent, "sys_run_smoke", 0.0, -1.0, 0.5); }
+    }
+}
+pub unsafe extern "C" fn effect_runbrake(agent: &mut L2CAgentBase) {
+    if now!(agent) { dust(agent, "sys_turn_smoke", 0.0, 2.0, 0.6); }
+}
+pub unsafe extern "C" fn effect_turnrun(agent: &mut L2CAgentBase) {
+    if now!(agent) { dust(agent, "sys_turn_smoke", 0.0, 0.0, 0.6); }
+    at!(agent, 10);
+    if now!(agent) { dust(agent, "sys_run_smoke", 0.0, 1.5, 0.5); }
+}
