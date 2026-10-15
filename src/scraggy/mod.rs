@@ -14,7 +14,8 @@ static mut HB_FRAMES: [i32; 8] = [0; 8];      // frames spent flying in the Head
 static mut FP_LAST: [f32; 8] = [0.0; 8];      // charge of the punch just thrown (for its effects)
 static mut FP_GLOW: [bool; 8] = [false; 8];   // body tint is on (charging)
 static mut FP_IDLE: [i32; 8] = [0; 8];        // timer for the "fully charged" glint while it's stored
-static mut TRIP_DONE: [bool; 8] = [false; 8]; // down throw already tripped its victim
+static mut TRIP_DONE: [bool; 8] = [false; 8]; // down throw already marked its victim
+static mut TRIP_WAIT: [i32; 8] = [0; 8];      // per victim entry: frames left to trip them (set by the down throw)
 const FP_FULL: i32 = 75;
 const SQUIRTLE_WATER_FX: [&str; 24] = ["pzenigame_dash", "pzenigame_run", "pzenigame_brake", "pzenigame_dash_atk", "pzenigame_mouth_water",
     "pzenigame_water_smash", "pzenigame_water_smash_r", "pzenigame_water_ripple", "pzenigame_water_attack_spin", "pzenigame_water_attack",
@@ -65,21 +66,19 @@ unsafe extern "C" fn scraggy_frame(fighter: &mut L2CFighterCommon) {
             if FP_IDLE[e] % 40 == 0 { fist_fx(boma, "sys_smash_flash_s", 0.6, 1.0, 0.45, 0.1); }
         }
     }
-    // down throw: Tail Trip - right after the release the victim trips (prone, like a trip from a banana)
+    // down throw: Tail Trip - on release, mark the victim; their own frame hook (trip_victim) trips them as soon as
+    // they come out of the throw, so it doesn't matter how long the throw's hitlag keeps them in THROWN
     if status == *FIGHTER_STATUS_KIND_THROW && MotionModule::motion_kind(boma) == smash::hash40("throw_lw") {
-        let f = MotionModule::frame(boma);
-        if !TRIP_DONE[e] && f >= 17.0 && f < 22.0 {
+        if !TRIP_DONE[e] && MotionModule::frame(boma) >= 17.0 {
             let id = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_OBJECT) as u32;
             if id != 0 && id != 0x50000000 && smash::app::sv_battle_object::is_active(id) {
                 let v = smash::app::sv_battle_object::module_accessor(id);
-                let vs = StatusModule::status_kind(v);
-                if vs != *FIGHTER_STATUS_KIND_THROWN && vs != *FIGHTER_STATUS_KIND_CAPTURE_PULLED && vs != *FIGHTER_STATUS_KIND_CAPTURE_WAIT
-                    && StatusModule::situation_kind(v) == *SITUATION_KIND_GROUND {
-                    KineticModule::clear_speed_all(v);
-                    StatusModule::change_status_request_from_script(v, *FIGHTER_STATUS_KIND_SLIP, false);
-                    TRIP_DONE[e] = true;
+                if smash::app::utility::get_category(&mut *v) == *BATTLE_OBJECT_CATEGORY_FIGHTER {
+                    let ve = (WorkModule::get_int(v, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize).min(7);
+                    TRIP_WAIT[ve] = 45;
                 }
             }
+            TRIP_DONE[e] = true;
         }
     } else {
         TRIP_DONE[e] = false;
@@ -131,6 +130,22 @@ unsafe fn fist_fx(boma: *mut BattleObjectModuleAccessor, name: &str, scale: f32,
     let h = EffectModule::req_follow(boma, smash::phx::Hash40::new(name), smash::phx::Hash40::new("handr"), &z, &z, scale, true, 0, 0, 0, 0, 0, false, false);
     EffectModule::set_rgb(boma, h as u32, r, g, b);
 }
+/// runs on every fighter: a victim marked by Scraggy's down throw trips (SLIP -> prone) once the throw lets go of them
+unsafe extern "C" fn trip_victim(fighter: &mut L2CFighterCommon) {
+    let boma = fighter.module_accessor;
+    let e = (WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize).min(7);
+    if TRIP_WAIT[e] <= 0 { return; }
+    TRIP_WAIT[e] -= 1;
+    let s = StatusModule::status_kind(boma);
+    if s == *FIGHTER_STATUS_KIND_THROWN || s == *FIGHTER_STATUS_KIND_CAPTURE_PULLED || s == *FIGHTER_STATUS_KIND_CAPTURE_WAIT
+        || s == *FIGHTER_STATUS_KIND_CAPTURE_DAMAGE { return; }
+    if s == *FIGHTER_STATUS_KIND_SLIP || s == *FIGHTER_STATUS_KIND_DOWN || s == *FIGHTER_STATUS_KIND_DEAD { TRIP_WAIT[e] = 0; return; }
+    if StatusModule::situation_kind(boma) == *SITUATION_KIND_GROUND {
+        KineticModule::clear_speed_all(boma);
+        StatusModule::change_status_request_from_script(boma, *FIGHTER_STATUS_KIND_SLIP, false);
+        TRIP_WAIT[e] = 0;
+    }
+}
 /// full charge: a big flash on the fist, a ring and the smash-charge "ding"
 unsafe fn full_flash(boma: *mut BattleObjectModuleAccessor) {
     fist_fx(boma, "sys_smash_flash", 1.6, 1.0, 0.5, 0.1);
@@ -139,6 +154,7 @@ unsafe fn full_flash(boma: *mut BattleObjectModuleAccessor) {
 }
 
 pub fn install() {
+    Agent::new("fighter").on_line(Main, trip_victim).install();
     use normals::*;
     use specials::*;
     use throws::*;

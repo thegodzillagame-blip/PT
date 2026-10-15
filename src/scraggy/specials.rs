@@ -43,8 +43,8 @@ pub unsafe extern "C" fn game_specialnshot(agent: &mut L2CAgentBase) {
     at!(agent, 3);
     if now!(agent) {
         super::focus_spend(e);
-        hit(agent, 0, 0, "handr", dmg, 55, 80, 0, bkb, 3.6, 0.0, 0.0, 0.0, 1.0 + 0.8 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
-        hit_cap(agent, 1, 0, "top", dmg * 0.85, 55, 80, 0, bkb, 2.8, 5.0, 4.0, 5.0, 12.0, 1.0 + 0.6 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+        hit(agent, 0, 0, "handr", dmg, 70, 80, 0, bkb, 3.6, 0.0, 0.0, 0.0, 1.0 + 0.8 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+        hit_cap(agent, 1, 0, "top", dmg * 0.85, 70, 80, 0, bkb, 2.8, 5.0, 4.0, 5.0, 12.0, 1.0 + 0.6 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
         // lighter launch but a long stun, so he can follow up (it's jump-cancelable on hit - see mod.rs)
         AttackModule::set_add_reaction_frame(agent.module_accessor, 0, 10.0 + 15.0 * c, false);
         AttackModule::set_add_reaction_frame(agent.module_accessor, 1, 10.0 + 15.0 * c, false);

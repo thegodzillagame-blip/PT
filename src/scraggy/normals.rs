@@ -110,7 +110,7 @@ pub unsafe extern "C" fn game_attacks3(agent: &mut L2CAgentBase) {
         hit(agent, 2, 0, "top", 8.0, 361, 90, 0, 30, 2.6, 0.0, 4.0, 6.0, 1.1, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
     }
     at!(agent, 12);
-    if now!(agent) { clear(agent); }
+    if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.7); }   // less endlag
 }
 pub unsafe extern "C" fn effect_attacks3(agent: &mut L2CAgentBase) {
     at!(agent, 8);
@@ -129,7 +129,7 @@ pub unsafe extern "C" fn game_attackhi3(agent: &mut L2CAgentBase) {
         hit(agent, 1, 0, "top", 6.0, 90, 110, 0, 40, 2.6, 0.0, 9.0, 1.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
     }
     at!(agent, 12);
-    if now!(agent) { clear(agent); }
+    if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.7); }   // less endlag
 }
 pub unsafe extern "C" fn effect_attackhi3(agent: &mut L2CAgentBase) {
     at!(agent, 7);
@@ -155,7 +155,7 @@ pub unsafe extern "C" fn game_attacklw3(agent: &mut L2CAgentBase) {
         AttackModule::set_attack_height_all(agent.module_accessor, AttackHeight(*ATTACK_HEIGHT_LOW), false);
     }
     at!(agent, 17);
-    if now!(agent) { clear(agent); }
+    if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.7); }   // less endlag
 }
 pub unsafe extern "C" fn effect_attacklw3(agent: &mut L2CAgentBase) {
     at!(agent, 7);
@@ -228,42 +228,55 @@ pub unsafe extern "C" fn sound_attackhi4(agent: &mut L2CAgentBase) {
     if now!(agent) { se(agent, "se_pzenigame_swing_l"); se(agent, "vc_pzenigame_attack05"); }
 }
 
-// ===================================================================== D-SMASH: spinning head sweep (charge holds at f6)
+// ===================================================================== D-SMASH: ground pound - fist raised overhead (charge holds at f6),
+// slams the floor on 12 and the quake hits all around him
 pub unsafe extern "C" fn game_attacklw4(agent: &mut L2CAgentBase) {
     at!(agent, 6);
     if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_FLAG_START_SMASH_HOLD); }
+    at!(agent, 11);
+    if now!(agent) {
+        // the fist on the way down
+        b(agent, 0, "handr", 15.0, 60, 92, 35, 4.2, 1.3, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+    }
     at!(agent, 12);
     if now!(agent) {
-        b(agent, 0, "head", 13.0, 30, 95, 30, 3.8, 1.2, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
-        hit(agent, 1, 0, "top", 12.0, 30, 95, 0, 30, 3.4, 0.0, 3.5, 0.0, 1.1, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        // the quake: a wide low band both sides of him
+        hit_cap(agent, 1, 0, "top", 13.0, 70, 90, 0, 40, 4.0, 2.0, -13.0, 2.0, 13.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
         AttackModule::set_attack_height_all(agent.module_accessor, AttackHeight(*ATTACK_HEIGHT_LOW), false);
     }
-    at!(agent, 19);
-    if now!(agent) {
-        b(agent, 0, "head", 8.0, 45, 85, 25, 3.4, 0.9, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
-        AttackModule::clear(agent.module_accessor, 1, false);
-    }
-    at!(agent, 33);
+    at!(agent, 13);
+    if now!(agent) { AttackModule::clear(agent.module_accessor, 0, false); }
+    at!(agent, 16);
     if now!(agent) { clear(agent); }
 }
 pub unsafe extern "C" fn effect_attacklw4(agent: &mut L2CAgentBase) {
     at!(agent, 5);
-    if now!(agent) { macros::EFFECT_FLIP(agent, Hash40::new("sys_smash_flash"), Hash40::new("sys_smash_flash"), Hash40::new("top"), 0, 5, 0, 0, 0, 0, 0.7, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ); }
-    at!(agent, 11);
+    if now!(agent) { macros::EFFECT_FLIP(agent, Hash40::new("sys_smash_flash"), Hash40::new("sys_smash_flash"), Hash40::new("top"), 0, 9, 0, 0, 0, 0, 0.7, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ); }
+    at!(agent, 10);
+    if now!(agent) { fx_follow(agent, "sys_attack_line", "handr", 0.0, 0.0, 0.0, 90.0, 0.0, 0.0, 0.7); orange(agent); }
+    at!(agent, 12);
     if now!(agent) {
-        fx_follow(agent, "sys_spin_wind", "top", 0.0, 3.5, 0.0, 0.0, 0.0, 0.0, 0.9); orange(agent);
-        macros::FOOT_EFFECT(agent, Hash40::new("sys_turn_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
+        fx(agent, "sys_attack_impact", "top", 0.0, 1.5, 1.0, 0.0, 0.0, 0.0, 1.2); red(agent);
+        fx(agent, "sys_quake", "top", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.3);
+        fx(agent, "sys_bomb_b", "top", 0.0, 0.5, 1.0, 0.0, 0.0, 0.0, 0.5); tint(agent, 0.55, 0.42, 0.3);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_crown"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 1.4, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, 7, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, -7, 0, 180, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
+        macros::QUAKE(agent, *CAMERA_QUAKE_KIND_M);
     }
-    at!(agent, 21);
-    if now!(agent) { fx_follow(agent, "sys_spin_wind_s", "top", 0.0, 3.5, 0.0, 0.0, 0.0, 0.0, 0.8); orange(agent); }
+    at!(agent, 14);
+    if now!(agent) {
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, 11, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
+        macros::LANDING_EFFECT(agent, Hash40::new("sys_v_smoke_a"), Hash40::new("top"), 0, 0, -11, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
+    }
 }
 pub unsafe extern "C" fn sound_attacklw4(agent: &mut L2CAgentBase) {
     at!(agent, 7);
-    if now!(agent) { macros::STOP_SE(agent, Hash40::new("se_common_smash_start")); }
+    if now!(agent) { macros::STOP_SE(agent, Hash40::new("se_common_smash_start")); se(agent, "se_pzenigame_swing_l"); }
     at!(agent, 11);
-    if now!(agent) { se(agent, "se_pzenigame_swing_l"); se(agent, "vc_pzenigame_attack06"); }
-    at!(agent, 21);
-    if now!(agent) { se(agent, "se_pzenigame_swing_m"); }
+    if now!(agent) { se(agent, "vc_pzenigame_attack06"); }
+    at!(agent, 12);
+    if now!(agent) { se(agent, "se_pzenigame_smash_s01"); se(agent, "se_common_down_soil_s"); }
 }
 
 // ===================================================================== NAIR: curled spin
@@ -275,7 +288,7 @@ pub unsafe extern "C" fn game_attackairn(agent: &mut L2CAgentBase) {
     at!(agent, 12);
     if now!(agent) { b(agent, 0, "bust", 5.0, 50, 80, 20, 4.2, 0.8, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY); }
     at!(agent, 29);
-    if now!(agent) { clear(agent); }
+    if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.75); }   // less endlag
     at!(agent, 42);
     if now!(agent) { landing_off(agent); }
 }
@@ -302,7 +315,7 @@ pub unsafe extern "C" fn game_attackairf(agent: &mut L2CAgentBase) {
         b(agent, 1, "footr", 11.0, 40, 95, 30, 3.2, 1.2, *ATTACK_LR_CHECK_F, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
     }
     at!(agent, 13);
-    if now!(agent) { clear(agent); }
+    if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.75); }   // less endlag
     at!(agent, 32);
     if now!(agent) { landing_off(agent); }
 }
@@ -358,7 +371,7 @@ pub unsafe extern "C" fn game_attackairhi(agent: &mut L2CAgentBase) {
         hit(agent, 2, 0, "top", 8.0, 80, 100, 0, 30, 3.0, 0.0, 10.0, 0.0, 1.0, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_TAIL);
     }
     at!(agent, 12);
-    if now!(agent) { clear(agent); }
+    if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.75); }   // less endlag
     at!(agent, 24);
     if now!(agent) { landing_off(agent); }
 }
@@ -386,7 +399,7 @@ pub unsafe extern "C" fn game_attackairlw(agent: &mut L2CAgentBase) {
         b(agent, 1, "footr", 6.0, 361, 60, 20, 2.6, 0.9, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
     }
     at!(agent, 21);
-    if now!(agent) { clear(agent); }
+    if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.75); }   // less endlag
     at!(agent, 44);
     if now!(agent) { landing_off(agent); }
 }

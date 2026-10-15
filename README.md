@@ -41,6 +41,8 @@ ARCropolis + Skyline must already be installed (they are, since the mod loads).
 Push to GitHub - `.github/workflows/build.yml` builds the `.nro` with cargo-skyline.
 
 ### Scraggy (Squirtle slot, `src/scraggy`)
+Tilts and aerials (not bair) run their recovery faster once the hitbox ends (FT_MOTION_RATE 0.7 tilts / 0.75 aerials).
+
 | move | frames (anim) | notes |
 |---|---|---|
 | jab 1/2 | 5-6 2.5%, 4-5 4% | two punches; jab 3 blocked in the frame hook |
@@ -50,15 +52,15 @@ Push to GitHub - `.github/workflows/build.yml` builds the `.nro` with cargo-skyl
 | dtilt ball roll | 8-11 6%, 12-16 4% | low; rolls ~13.5 forward (root motion) |
 | fsmash lunge | hold f14, 18-21 15% | long-neck headbutt (old lunge mixed with the new coil) |
 | usmash hop arc | hold f6, 8-13 14% | coils leaning back, head arcs back -> over -> front |
-| dsmash spin | hold f6, 12-18 13%, 19-32 8% | low spinning head sweep (based on the old anim), both sides |
+| dsmash ground pound | hold f6, fist 11-12 15% 60°, quake 12-15 13% 70° | fist raised overhead, slams the floor; quake band ±13 both sides, low, camera shake |
 | nair spin | 7-11 9%, 12-28 5% | |
 | fair dropkick | 9-12 11% | original (pre-rebuild) animation |
 | bair head spike | 9-11 10% 270° | spike |
 | uair tail flip | 6-11 8% | |
 | dair double stomp | 8-11 12% meteor, 12-20 6% | |
 | fthrow headbutt | release 11, 8% | |
-| dthrow tail trip | release 17, 6% | victim is forced into a trip (SLIP) on release - tech chase |
+| dthrow tail trip | release 17, 6% | victim is marked on release; a hook on every fighter trips them (SLIP -> prone) as soon as they leave THROWN |
 | bthrow back roll | release 14, 9% 135° | |
-| neutral B Focus Punch | Water Gun charge; punch 3-6 | 6% -> 22% with charge (75f full), 55°, bkb 15-40 + 10-25f extra hitstun, jump-cancelable on hit; charge kept between uses; body glows hotter/faster with charge, full charge flashes + glints while stored |
+| neutral B Focus Punch | Water Gun charge; punch 3-6 | 6% -> 22% with charge (75f full), 70°, bkb 15-40 + 10-25f extra hitstun, jump-cancelable on hit; charge kept between uses; body glows hotter/faster with charge, full charge flashes + glints while stored |
 | side B Headbutt | head hitbox from start f7, 10%; sourspot 5% 70° from flight frame 13 | 22f flight, then the miss roll; bounces off on hit |
 | up B Brick Break | smash 10-11 12% spike, rise 12-20 5% | smashes a rock (mesh pzenigame_Rock, shown f0-10), rises ~45 (root motion) to f28, falls with control from f30 | |
