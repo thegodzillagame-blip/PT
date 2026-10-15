@@ -27,6 +27,28 @@ unsafe extern "C" fn scraggy_frame(fighter: &mut L2CFighterCommon) {
         FP_CHARGE[e] += 1;
         if FP_CHARGE[e] == FP_FULL { macros_flash(boma); }
     }
+    // jab is 2 hits: Squirtle's status would still chain into jab 3, so never let jab 2 open the combo
+    if status == *FIGHTER_STATUS_KIND_ATTACK && MotionModule::motion_kind(boma) == smash::hash40("attack_12") {
+        WorkModule::off_flag(boma, *FIGHTER_STATUS_ATTACK_FLAG_ENABLE_COMBO);
+    }
+    if status == *FIGHTER_STATUS_KIND_ATTACK && MotionModule::motion_kind(boma) == smash::hash40("attack_13") {
+        StatusModule::change_status_request_from_script(boma, *FIGHTER_STATUS_KIND_WAIT, false);
+    }
+    // Focus Punch: jump-cancelable once it connects
+    if status == *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_N_SHOOT && AttackModule::is_infliction_status(boma, *COLLISION_KIND_MASK_HIT) {
+        let cat = ControlModule::get_command_flag_cat(boma, 0);
+        if cat & (*FIGHTER_PAD_CMD_CAT1_FLAG_JUMP | *FIGHTER_PAD_CMD_CAT1_FLAG_JUMP_BUTTON) != 0 {
+            if StatusModule::situation_kind(boma) == *SITUATION_KIND_GROUND {
+                StatusModule::change_status_request_from_script(boma, *FIGHTER_STATUS_KIND_JUMP_SQUAT, true);
+            } else if WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_JUMP_COUNT) < WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_JUMP_COUNT_MAX) {
+                StatusModule::change_status_request_from_script(boma, *FIGHTER_STATUS_KIND_JUMP_AERIAL, true);
+            }
+        }
+    }
+    // Brick Break rock: the Up B animations show it until the smash (f10); hide it everywhere else as a backstop
+    let m = MotionModule::motion_kind(boma);
+    let rock = (m == smash::hash40("special_hi") || m == smash::hash40("special_air_hi")) && MotionModule::frame(boma) <= 10.0;
+    ModelModule::set_mesh_visibility(boma, smash::phx::Hash40::new("pzenigame_rock"), rock);
     // no Water Gun water, ever
     ArticleModule::remove_exist(boma, *FIGHTER_PZENIGAME_GENERATE_ARTICLE_WATER, ArticleOperationTarget(*ARTICLE_OPE_TARGET_ALL));
     // Headbutt: a short head-first flight, then the miss roll (Withdraw would keep sliding)

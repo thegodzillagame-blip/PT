@@ -1,6 +1,6 @@
 //! Scraggy's normals and aerials (Squirtle's slot c01). Frames are the frames of Scraggy's own animations
 //! (see SCRAGGY_FRAME_DATA.txt in the mod folder); hitboxes ride the bone that does the hitting.
-//! Effects use Mario-ish colours: orange trails, yellow impact flashes.
+//! Effects: orange trails, red impact flashes (yellow is kept for the Focus Punch charge glow).
 use smash::app::{lua_bind::*, sv_animcmd::*, *};
 use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
@@ -13,6 +13,8 @@ macro_rules! now { ($a:ident) => { macros::is_excute($a) } }
 
 pub unsafe fn orange(agent: &mut L2CAgentBase) { tint(agent, 1.0, 0.55, 0.15); }
 pub unsafe fn yellow(agent: &mut L2CAgentBase) { tint(agent, 1.0, 0.9, 0.3); }
+/// hit flashes are red
+pub unsafe fn red(agent: &mut L2CAgentBase) { tint(agent, 1.0, 0.18, 0.12); }
 unsafe fn landing_on(agent: &mut L2CAgentBase) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING); }
 unsafe fn landing_off(agent: &mut L2CAgentBase) { WorkModule::off_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_AIR_FLAG_ENABLE_LANDING); }
 unsafe fn clear(agent: &mut L2CAgentBase) { AttackModule::clear_all(agent.module_accessor); }
@@ -39,7 +41,7 @@ pub unsafe extern "C" fn effect_attack11(agent: &mut L2CAgentBase) {
     at!(agent, 4);
     if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_line"), Hash40::new("sys_attack_line"), Hash40::new("top"), 1, 6, 1, 0, 0, 0, 0.75, true, *EF_FLIP_YZ); orange(agent); }
     at!(agent, 5);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 6.0, 9.5, 0.0, 0.0, 0.0, 0.6); yellow(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 6.0, 9.5, 0.0, 0.0, 0.0, 0.6); red(agent); }
 }
 pub unsafe extern "C" fn sound_attack11(agent: &mut L2CAgentBase) {
     at!(agent, 3);
@@ -59,7 +61,7 @@ pub unsafe extern "C" fn effect_attack12(agent: &mut L2CAgentBase) {
     at!(agent, 3);
     if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_line"), Hash40::new("sys_attack_line"), Hash40::new("top"), -1, 6, 1, 0, 0, 0, 0.85, true, *EF_FLIP_YZ); orange(agent); }
     at!(agent, 4);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.5, 11.0, 0.0, 0.0, 0.0, 0.8); yellow(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.5, 11.0, 0.0, 0.0, 0.0, 0.8); red(agent); }
 }
 pub unsafe extern "C" fn sound_attack12(agent: &mut L2CAgentBase) {
     at!(agent, 3);
@@ -133,7 +135,7 @@ pub unsafe extern "C" fn effect_attackhi3(agent: &mut L2CAgentBase) {
     at!(agent, 7);
     if now!(agent) { fx_follow(agent, "sys_attack_line", "head", 0.0, 0.0, 0.0, -90.0, 0.0, 0.0, 0.6); orange(agent); }
     at!(agent, 8);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 17.0, 0.5, 0.0, 0.0, 0.0, 0.6); yellow(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 17.0, 0.5, 0.0, 0.0, 0.0, 0.6); red(agent); }
 }
 pub unsafe extern "C" fn sound_attackhi3(agent: &mut L2CAgentBase) {
     at!(agent, 7);
@@ -187,7 +189,7 @@ pub unsafe extern "C" fn effect_attacks4(agent: &mut L2CAgentBase) {
         macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -2, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
     }
     at!(agent, 18);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.5, 9.5, 0.0, 0.0, 0.0, 1.0); yellow(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.5, 9.5, 0.0, 0.0, 0.0, 1.0); red(agent); }
 }
 pub unsafe extern "C" fn sound_attacks4(agent: &mut L2CAgentBase) {
     at!(agent, 15);
@@ -308,7 +310,7 @@ pub unsafe extern "C" fn effect_attackairf(agent: &mut L2CAgentBase) {
     at!(agent, 8);
     if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_line"), Hash40::new("sys_attack_line"), Hash40::new("top"), 0, 5, 2, 0, 0, 0, 0.8, true, *EF_FLIP_YZ); orange(agent); }
     at!(agent, 9);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.0, 8.0, 0.0, 0.0, 0.0, 0.8); yellow(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.0, 8.0, 0.0, 0.0, 0.0, 0.8); red(agent); }
 }
 pub unsafe extern "C" fn sound_attackairf(agent: &mut L2CAgentBase) {
     at!(agent, 8);
@@ -332,7 +334,7 @@ pub unsafe extern "C" fn effect_attackairb(agent: &mut L2CAgentBase) {
     at!(agent, 8);
     if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 4, -1, 0, 52, 88, 0.7, true, *EF_FLIP_YZ); orange(agent); }
     at!(agent, 10);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 2.0, 0.5, 0.0, 0.0, 0.0, 0.9); yellow(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 2.0, 0.5, 0.0, 0.0, 0.0, 0.9); red(agent); }
 }
 pub unsafe extern "C" fn sound_attackairb(agent: &mut L2CAgentBase) {
     at!(agent, 8);
@@ -356,7 +358,7 @@ pub unsafe extern "C" fn game_attackairhi(agent: &mut L2CAgentBase) {
 }
 pub unsafe extern "C" fn effect_attackairhi(agent: &mut L2CAgentBase) {
     at!(agent, 5);
-    if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 9, 0, 0, 52, 88, 0.8, true, *EF_FLIP_YZ); orange(agent); }
+    if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 9, 0, 0, -52, -88, 0.8, true, *EF_FLIP_YZ); orange(agent); }
 }
 pub unsafe extern "C" fn sound_attackairhi(agent: &mut L2CAgentBase) {
     at!(agent, 5);
@@ -385,7 +387,7 @@ pub unsafe extern "C" fn game_attackairlw(agent: &mut L2CAgentBase) {
 pub unsafe extern "C" fn effect_attackairlw(agent: &mut L2CAgentBase) {
     at!(agent, 8);
     if now!(agent) {
-        fx(agent, "sys_attack_impact", "top", 0.0, -2.0, 0.0, 0.0, 0.0, 0.0, 1.0); yellow(agent);
+        fx(agent, "sys_attack_impact", "top", 0.0, -2.0, 0.0, 0.0, 0.0, 0.0, 1.0); red(agent);
         fx_follow(agent, "sys_attack_speedline", "top", 0.0, 4.0, 0.0, 90.0, 0.0, 0.0, 0.6); orange(agent);
     }
 }

@@ -10,7 +10,7 @@ use smash::lua2cpp::*;
 use smash::phx::*;
 use smash_script::*;
 use crate::util::*;
-use super::normals::{orange, yellow};
+use super::normals::{orange, yellow, red};
 
 macro_rules! at { ($a:ident, $f:expr) => { frame($a.lua_state_agent, $f as f32) } }
 macro_rules! now { ($a:ident) => { macros::is_excute($a) } }
@@ -40,12 +40,15 @@ pub unsafe extern "C" fn game_specialnshot(agent: &mut L2CAgentBase) {
     let e = (WorkModule::get_int(agent.module_accessor, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize).min(7);
     let c = super::focus_charge(e);
     let dmg = 6.0 + 16.0 * c;
-    let bkb = (30.0 + 40.0 * c) as i32;
+    let bkb = (15.0 + 25.0 * c) as i32;
     at!(agent, 3);
     if now!(agent) {
         super::focus_spend(e);
-        hit(agent, 0, 0, "handr", dmg, 361, 85, 0, bkb, 3.6, 0.0, 0.0, 0.0, 1.0 + 0.8 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
-        hit_cap(agent, 1, 0, "top", dmg * 0.85, 361, 85, 0, bkb, 2.8, 5.0, 4.0, 5.0, 12.0, 1.0 + 0.6 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+        hit(agent, 0, 0, "handr", dmg, 361, 80, 0, bkb, 3.6, 0.0, 0.0, 0.0, 1.0 + 0.8 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+        hit_cap(agent, 1, 0, "top", dmg * 0.85, 361, 80, 0, bkb, 2.8, 5.0, 4.0, 5.0, 12.0, 1.0 + 0.6 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+        // lighter launch but a long stun, so he can follow up (it's jump-cancelable on hit - see mod.rs)
+        AttackModule::set_add_reaction_frame(agent.module_accessor, 0, 10.0 + 15.0 * c, false);
+        AttackModule::set_add_reaction_frame(agent.module_accessor, 1, 10.0 + 15.0 * c, false);
     }
     at!(agent, 7);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
@@ -58,7 +61,7 @@ pub unsafe extern "C" fn effect_specialnshot(agent: &mut L2CAgentBase) {
     }
     at!(agent, 3);
     if now!(agent) {
-        fx(agent, "sys_smash_flash", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9); yellow(agent);
+        fx(agent, "sys_smash_flash", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9); red(agent);
         fx(agent, "sys_crown", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 0.5); tint(agent, 1.0, 1.0, 1.0);
     }
 }
@@ -100,8 +103,8 @@ pub unsafe extern "C" fn sound_specials(agent: &mut L2CAgentBase) {
 pub unsafe extern "C" fn effect_specialshit(agent: &mut L2CAgentBase) {
     at!(agent, 1);
     if now!(agent) {
-        fx(agent, "sys_attack_impact", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0); tint(agent, 1.0, 1.0, 1.0);
-        fx(agent, "sys_crown", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 0.5); yellow(agent);
+        fx(agent, "sys_attack_impact", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0); red(agent);
+        fx(agent, "sys_crown", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 0.5); red(agent);
     }
 }
 pub unsafe extern "C" fn sound_specialshit(agent: &mut L2CAgentBase) {
@@ -149,6 +152,9 @@ unsafe extern "C" fn brick_game(agent: &mut L2CAgentBase) {
     if now!(agent) { notify_event_msc_cmd!(agent, Hash40::new_raw(0x2127e37c07), *GROUND_CLIFF_CHECK_KIND_ALWAYS); }
     at!(agent, 21);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
+    at!(agent, 30);
+    // top of the spring: hand him back to physics so he falls with air control instead of hanging there
+    if now!(agent) { WorkModule::off_flag(agent.module_accessor, *FIGHTER_STATUS_SUPER_JUMP_PUNCH_FLAG_MOVE_TRANS); }
     at!(agent, 40);
     if now!(agent) { notify_event_msc_cmd!(agent, Hash40::new_raw(0x2127e37c07), *GROUND_CLIFF_CHECK_KIND_ALWAYS_BOTH_SIDES); }
 }
@@ -159,7 +165,10 @@ unsafe extern "C" fn brick_effect(agent: &mut L2CAgentBase) {
     if now!(agent) { fx_follow(agent, "sys_smash_flash_s", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6); yellow(agent); }
     at!(agent, 10);
     if now!(agent) {
-        fx(agent, "sys_attack_impact", "top", 0.0, 1.0, 3.0, 0.0, 0.0, 0.0, 1.1); yellow(agent);
+        // the rock (a mesh shown by the animation until this frame) shatters
+        fx(agent, "sys_attack_impact", "top", 0.0, 1.0, 3.0, 0.0, 0.0, 0.0, 1.1); red(agent);
+        fx(agent, "sys_bomb_b", "top", -1.0, 1.2, 2.6, 0.0, 0.0, 0.0, 0.45); tint(agent, 0.55, 0.42, 0.3);
+        fx(agent, "sys_quake", "top", 0.0, 0.0, 2.6, 0.0, 0.0, 0.0, 0.5);
         macros::LANDING_EFFECT(agent, Hash40::new("sys_crown"), Hash40::new("top"), 0, 0, 3, 0, 0, 0, 0.6, 0, 0, 0, 0, 0, 0, false);
         macros::LANDING_EFFECT(agent, Hash40::new("sys_down_smoke"), Hash40::new("top"), 0, 0, 3, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
     }

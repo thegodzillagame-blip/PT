@@ -5,7 +5,7 @@ use smash::lua2cpp::*;
 use smash::phx::*;
 use smash_script::*;
 use crate::util::*;
-use super::normals::{orange, yellow};
+use super::normals::{orange, red};
 
 macro_rules! at { ($a:ident, $f:expr) => { frame($a.lua_state_agent, $f as f32) } }
 macro_rules! now { ($a:ident) => { macros::is_excute($a) } }
@@ -31,7 +31,7 @@ pub unsafe extern "C" fn game_throwf(agent: &mut L2CAgentBase) {
 }
 pub unsafe extern "C" fn effect_throwf(agent: &mut L2CAgentBase) {
     at!(agent, 11);
-    if now!(agent) { fx(agent, "sys_attack_impact", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9); tint(agent, 1.0, 1.0, 1.0); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9); red(agent); }
 }
 pub unsafe extern "C" fn sound_throwf(agent: &mut L2CAgentBase) {
     at!(agent, 9);
@@ -73,7 +73,7 @@ pub unsafe extern "C" fn effect_throwb(agent: &mut L2CAgentBase) {
     at!(agent, 9);
     if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 7, -2, 0, -52, -88, 0.9, true, *EF_FLIP_YZ); tint(agent, 1.0, 1.0, 1.0); }
     at!(agent, 14);
-    if now!(agent) { fx(agent, "sys_attack_impact", "throw", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8); yellow(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "throw", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8); red(agent); }
 }
 pub unsafe extern "C" fn sound_throwb(agent: &mut L2CAgentBase) {
     at!(agent, 8);
