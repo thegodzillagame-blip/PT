@@ -6,6 +6,7 @@
 mod util;
 mod haxorus;
 mod scraggy;
+mod bisharp;
 
 /// costume slots this mod owns (c01)
 pub const SLOTS: [usize; 1] = [1];
@@ -14,4 +15,5 @@ pub const SLOTS: [usize; 1] = [1];
 pub fn main() {
     haxorus::install();
     scraggy::install();
+    bisharp::install();
 }
