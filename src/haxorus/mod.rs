@@ -21,7 +21,8 @@ static mut DD_DANCE: [i32; 8] = [0; 8];       // frames spent stomping in the cu
 static mut DD_GRANTED: [bool; 8] = [false; 8];
 static mut DD_SPEED: [i32; 8] = [0; 8];       // frames of speed boost left
 static mut DD_ARMED: [bool; 8] = [false; 8];  // next attack is powered up
-static mut DD_USING: [bool; 8] = [false; 8];  // ...and that attack is happening now
+static mut DD_USING: [bool; 8] = [false; 8];
+static mut DD_TICK: [i32; 8] = [0; 8];         // timer for the power glow  // ...and that attack is happening now
 static mut OUTRAGE_HITS: [i32; 8] = [0; 8];
 static mut OUTRAGE_WAS_HIT: [bool; 8] = [false; 8];
 static mut OUTRAGE_FRAMES: [i32; 8] = [0; 8];
@@ -53,6 +54,7 @@ unsafe fn aura(boma: *mut BattleObjectModuleAccessor, bone: &str, scale: f32, r:
     let z = Vector3f { x: 0.0, y: 0.0, z: 0.0 };
     let h = EffectModule::req_follow(boma, Hash40::new("sys_hit_aura_s"), Hash40::new(bone), &z, &z, scale, true, 0, 0, 0, 0, 0, false, false);
     EffectModule::set_rgb(boma, h as u32, r, g, b);
+    EffectModule::set_alpha(boma, h as u32, 0.55);
 }
 
 /// Dragon Dance: dance for a while, then the roar gives a short burst of speed and powers up the NEXT attack only.
@@ -94,7 +96,9 @@ unsafe fn dragon_dance(boma: *mut BattleObjectModuleAccessor, e: usize) {
             let vx = KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
             PostureModule::add_pos(boma, &Vector3f { x: vx * DD_SPEED_MUL, y: 0.0, z: 0.0 });
         }
-        if DD_SPEED[e] % 20 == 0 { aura(boma, "top", 0.7, 0.4, 0.75, 1.0); }
+        // speed: small blue wisps at the feet (was one big aura over his whole body)
+        if DD_SPEED[e] % 24 == 0 { aura(boma, "footl", 0.3, 0.4, 0.75, 1.0); }
+        if DD_SPEED[e] % 24 == 12 { aura(boma, "footr", 0.3, 0.4, 0.75, 1.0); }
     }
     // power: the next attack he starts is boosted; it's spent when that attack is over
     if DD_ARMED[e] {
@@ -105,7 +109,9 @@ unsafe fn dragon_dance(boma: *mut BattleObjectModuleAccessor, e: usize) {
             AttackModule::set_power_up(boma, 1.0);
         } else {
             AttackModule::set_power_up(boma, if DD_USING[e] { DD_POWER } else { 1.0 });
-            if MotionModule::frame(boma) as i32 % 30 == 0 { aura(boma, "bust", 1.2, 0.65, 0.2, 1.0); }
+            // power: a small purple glow on the claws only (was a body-sized aura that hid him)
+            DD_TICK[e] += 1;
+            if DD_TICK[e] % 30 == 0 { aura(boma, "handl", 0.35, 0.65, 0.2, 1.0); aura(boma, "handr", 0.35, 0.65, 0.2, 1.0); }
         }
     }
 }
