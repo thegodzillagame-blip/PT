@@ -35,7 +35,7 @@ ARCropolis + Skyline must already be installed (they are, since the mod loads).
 
 | neutral B Dragon Dance | hold to dance 60f+ | release: +30% movement speed for 5 s and +40% damage on the NEXT attack only; no breath |
 | side B Outrage | 2% autolink rakes (rehit 4), finisher 7% | ends after 4 rakes or a short run; no explosion, no recoil, no blow-back; same in the air |
-| up B Giga Impact | 4% scoop f9, 1.5% carry f13-46 | carries them up, the dive drags them down (1.5% autolink), crash 9% launches |
+| up B Giga Impact | 4% scoop f9, 1.5% rakes f13-41, 4% down-knock f42 (+30f stun) | cuts to the dive at f48; dive falls 4.5/frame from frame 1 with an 8% spike; crash 8% launches |
 
 ## Building
 Push to GitHub - `.github/workflows/build.yml` builds the `.nro` with cargo-skyline.

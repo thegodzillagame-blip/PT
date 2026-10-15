@@ -2,7 +2,7 @@
 //!   Neutral B  DRAGON DANCE  - hold B to stomp out a war-dance; dance long enough and the roar gives a short speed
 //!                              boost and powers up his NEXT attack only.
 //!   Side B     OUTRAGE       - a short charge of autolinking claw rakes ending in a finisher swipe; never blows him back.
-//!   Up B       GIGA IMPACT   - spinning launch that carries them up, then a belly-first dive that drags them into the crash.
+//!   Up B       GIGA IMPACT   - spinning launch that rakes them up, knocks them down at the top, then a fast spiking dive and crash.
 //! The status code underneath is still Charizard's (that's what moves him); these scripts swap the hits/effects/sounds,
 //! and `frame()` in mod.rs removes Flamethrower's breath and runs Dragon Dance / Outrage / the dive.
 use smash::app::{lua_bind::*, sv_animcmd::*, *};
@@ -231,11 +231,20 @@ unsafe extern "C" fn giga_game(agent: &mut L2CAgentBase) {
     at!(agent, 13);
     if now!(agent) {
         damage!(agent, *MA_MSC_DAMAGE_DAMAGE_NO_REACTION, *DAMAGE_NO_REACTION_MODE_NORMAL, 0);
-        // spinning ascent: carries them all the way to the top, where the dive takes over
-        hitm(agent, 0, "top", 1.5, 367, 100, 40, 0, 6.5, 22.0, 2.0, 4.0, 1.0, 4, "collision_attr_rush", *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        // spinning ascent: rakes them up with him, held right in front of his chest
+        hitm(agent, 0, "top", 1.5, 367, 100, 40, 0, 7.5, 9.0, 6.0, 19.0, 4.0, 4, "collision_attr_rush", *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 21);
     if now!(agent) { notify_event_msc_cmd!(agent, Hash40::new_raw(0x2127e37c07), *GROUND_CLIFF_CHECK_KIND_ALWAYS_BOTH_SIDES); }
+    at!(agent, 42);
+    if now!(agent) {
+        // at the top: slams them DOWN a short way with a long stun, so the dive lands right on them
+        AttackModule::clear_all(agent.module_accessor);
+        hitm(agent, 0, "top", 4.0, 270, 40, 35, 0, 9.0, 8.0, 5.0, 20.0, 4.0, 0, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        AttackModule::set_add_reaction_frame(agent.module_accessor, 0, 30.0, false);
+    }
+    at!(agent, 44);
+    if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
     at!(agent, 46);
     if now!(agent) { WorkModule::off_flag(agent.module_accessor, *FIGHTER_STATUS_SUPER_JUMP_PUNCH_FLAG_MOVE_TRANS); }
 }
@@ -269,11 +278,12 @@ unsafe extern "C" fn giga_sound(agent: &mut L2CAgentBase) {
 }
 pub unsafe extern "C" fn sound_specialhi(agent: &mut L2CAgentBase) { giga_sound(agent) }
 pub unsafe extern "C" fn sound_specialairhi(agent: &mut L2CAgentBase) { giga_sound(agent) }
-// the helpless fall after it is the belly-first DIVE: drags whoever he carried up back down into the crash
-// (Bowser Bomb style), and catches anyone underneath on the way
+// the helpless fall after it is the belly-first DIVE (mod.rs makes it start fast on frame 1): a spike on his belly
+// that drives them into the floor ahead of the crash
 pub unsafe extern "C" fn game_fallspecial(agent: &mut L2CAgentBase) {
     if now!(agent) {
-        hitm(agent, 0, "top", 1.5, 367, 100, 40, 0, 7.5, 3.0, 2.0, 22.0, 2.0, 4, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hitm(agent, 0, "top", 8.0, 275, 70, 0, 40, 8.0, 3.0, 4.0, 12.0, 6.0, 0, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hitm(agent, 1, "top", 8.0, 275, 70, 0, 40, 6.0, 0.0, 9.0, 0.0, 9.0, 0, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
     }
 }
 pub unsafe extern "C" fn effect_fallspecial(agent: &mut L2CAgentBase) {
@@ -283,8 +293,8 @@ pub unsafe extern "C" fn effect_fallspecial(agent: &mut L2CAgentBase) {
 // crash landing: crater shockwave
 pub unsafe extern "C" fn game_landingfallspecial(agent: &mut L2CAgentBase) {
     if now!(agent) {
-        // the slam: launches whatever he dragged down
-        hitm(agent, 0, "top", 9.0, 65, 85, 0, 62, 9.0, 4.0, 9.0, 4.0, -7.0, 0, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        // the slam: launches whatever got spiked into the floor
+        hitm(agent, 0, "top", 8.0, 65, 85, 0, 62, 9.0, 4.0, 9.0, 4.0, -7.0, 0, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 3);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }

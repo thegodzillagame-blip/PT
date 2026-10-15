@@ -5,6 +5,7 @@ use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
 use smash::phx::*;
 use smashline::{Priority::*, *};
+use smash_script::*;
 
 mod kept_fixed;
 mod normals;
@@ -29,6 +30,7 @@ const DD_NEED: i32 = 60;               // frames of dancing (about 3 stomp cycle
 const DD_SPEED_FRAMES: i32 = 300;      // 5 seconds of extra speed
 const DD_SPEED_MUL: f32 = 0.3;         // +30% movement speed
 const DD_POWER: f32 = 1.4;             // the next attack only: +40% damage
+const GIGA_DIVE_SPEED: f32 = 4.5;      // units/frame straight down (Charizard's max fall is ~1.9)
 const OUTRAGE_MULTI: i32 = 4;          // claw rakes before the finisher
 const OUTRAGE_RUSH_MAX: i32 = 18;      // frames of running before a whiffed rampage stops (shorter than Flare Blitz)
 
@@ -127,13 +129,22 @@ unsafe fn outrage(boma: *mut BattleObjectModuleAccessor, e: usize) {
     }
 }
 
-/// Giga Impact: the helpless fall after it is a dive - accelerate down hard.
-unsafe fn giga_dive(boma: *mut BattleObjectModuleAccessor, e: usize) {
+/// Giga Impact: cut straight into the dive once he has flipped over at the top, and dive FAST from the first frame.
+unsafe fn giga_dive(fighter: &mut L2CFighterCommon, e: usize) {
+    let boma = fighter.module_accessor;
     let status = StatusModule::status_kind(boma);
-    if status == *FIGHTER_STATUS_KIND_SPECIAL_HI { GIGA[e] = true; return; }
+    if status == *FIGHTER_STATUS_KIND_SPECIAL_HI {
+        GIGA[e] = true;
+        if MotionModule::frame(boma) >= 48.0 {
+            StatusModule::change_status_request_from_script(boma, *FIGHTER_STATUS_KIND_FALL_SPECIAL, false);
+        }
+        return;
+    }
     if status != *FIGHTER_STATUS_KIND_FALL_SPECIAL { GIGA[e] = false; return; }
-    if GIGA[e] && KineticModule::get_sum_speed_y(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN) > -3.6 {
-        KineticModule::add_speed(boma, &Vector3f { x: 0.0, y: -0.22, z: 0.0 });
+    if GIGA[e] {
+        sv_kinetic_energy!(set_stable_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, GIGA_DIVE_SPEED);
+        sv_kinetic_energy!(set_limit_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, GIGA_DIVE_SPEED);
+        sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, -GIGA_DIVE_SPEED);
     }
 }
 
@@ -145,7 +156,7 @@ unsafe extern "C" fn haxorus_frame(fighter: &mut L2CFighterCommon) {
     let e = (WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize).min(7);
     dragon_dance(boma, e);
     outrage(boma, e);
-    giga_dive(boma, e);
+    giga_dive(fighter, e);
     if PostureModule::lr(boma) < 0.0 && MotionModule::motion_kind(boma) == smash::hash40("attack_air_n") {
         let f = (MotionModule::frame(boma) as usize).min(NAIR_YAW.len() - 1);
         let rot = Vector3f { x: 0.0, y: -2.0 * NAIR_YAW[f], z: 0.0 };
