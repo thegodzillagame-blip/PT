@@ -57,7 +57,7 @@ Tilts and aerials (not bair) run their recovery faster once the hitbox ends (FT_
 | fair dropkick | 9-12 11% | original (pre-rebuild) animation |
 | bair head spike | 9-11 10% 270° | spike |
 | uair tail flip | 6-11 8% | |
-| dair double stomp | 8-11 12% meteor, 12-20 6% | |
+| dair butt slam | 7-10 10% 75°, 11-20 6% | whole body hits; bounces him up on hit (combo starter) |
 | fthrow headbutt | release 11, 8% | |
 | dthrow tail trip | release 17, 6% | victim is marked on release; a hook on every fighter trips them (SLIP -> prone) as soon as they leave THROWN |
 | bthrow back roll | release 14, 9% 135° | |

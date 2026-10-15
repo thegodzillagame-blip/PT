@@ -4,6 +4,7 @@ use smash::app::{lua_bind::*, *};
 use smash::lib::lua_const::*;
 use smash::lua2cpp::*;
 use smashline::{Priority::*, *};
+use smash_script::*;
 
 mod normals;
 mod specials;
@@ -15,6 +16,7 @@ static mut FP_LAST: [f32; 8] = [0.0; 8];      // charge of the punch just thrown
 static mut FP_GLOW: [bool; 8] = [false; 8];   // body tint is on (charging)
 static mut FP_IDLE: [i32; 8] = [0; 8];        // timer for the "fully charged" glint while it's stored
 static mut TRIP_DONE: [bool; 8] = [false; 8]; // down throw already marked its victim
+static mut DAIR_BOUNCED: [bool; 8] = [false; 8]; // butt slam already bounced him this use
 static mut TRIP_WAIT: [i32; 8] = [0; 8];      // per victim entry: frames left to trip them (set by the down throw)
 const FP_FULL: i32 = 75;
 const SQUIRTLE_WATER_FX: [&str; 24] = ["pzenigame_dash", "pzenigame_run", "pzenigame_brake", "pzenigame_dash_atk", "pzenigame_mouth_water",
@@ -82,6 +84,15 @@ unsafe extern "C" fn scraggy_frame(fighter: &mut L2CFighterCommon) {
         }
     } else {
         TRIP_DONE[e] = false;
+    }
+    // dair butt slam: on hit he pops back up a little (combo starter, not a spike)
+    if status == *FIGHTER_STATUS_KIND_ATTACK_AIR && MotionModule::motion_kind(boma) == smash::hash40("attack_air_lw") {
+        if !DAIR_BOUNCED[e] && AttackModule::is_infliction_status(boma, *COLLISION_KIND_MASK_HIT) {
+            sv_kinetic_energy!(set_speed, fighter, FIGHTER_KINETIC_ENERGY_ID_GRAVITY, 1.6);
+            DAIR_BOUNCED[e] = true;
+        }
+    } else {
+        DAIR_BOUNCED[e] = false;
     }
     // jab is 2 hits: Squirtle's status would still chain into jab 3, so never let jab 2 open the combo
     if status == *FIGHTER_STATUS_KIND_ATTACK && MotionModule::motion_kind(boma) == smash::hash40("attack_12") {

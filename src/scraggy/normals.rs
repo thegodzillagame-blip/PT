@@ -384,34 +384,37 @@ pub unsafe extern "C" fn sound_attackairhi(agent: &mut L2CAgentBase) {
     if now!(agent) { se(agent, "se_pzenigame_swing_m"); }
 }
 
-// ===================================================================== DAIR: double stomp (meteor on the clean hit)
+// ===================================================================== DAIR: butt slam - tucks up, drops seat-first; whole body hits, bounces him up on hit (mod.rs)
 pub unsafe extern "C" fn game_attackairlw(agent: &mut L2CAgentBase) {
     at!(agent, 3);
     if now!(agent) { landing_on(agent); }
-    at!(agent, 8);
+    at!(agent, 7);
     if now!(agent) {
-        b(agent, 0, "footl", 12.0, 270, 85, 20, 3.0, 1.3, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
-        b(agent, 1, "footr", 12.0, 270, 85, 20, 3.0, 1.3, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
+        b(agent, 0, "hip", 10.0, 75, 70, 35, 4.8, 1.2, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        b(agent, 1, "bust", 10.0, 75, 70, 35, 4.0, 1.2, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hit(agent, 2, 0, "top", 10.0, 75, 70, 0, 35, 3.6, 0.0, 1.5, 3.0, 1.2, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
     }
-    at!(agent, 12);
+    at!(agent, 11);
     if now!(agent) {
-        b(agent, 0, "footl", 6.0, 361, 60, 20, 2.6, 0.9, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
-        b(agent, 1, "footr", 6.0, 361, 60, 20, 2.6, 0.9, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_KICK, *ATTACK_REGION_KICK);
+        b(agent, 0, "hip", 6.0, 70, 60, 30, 4.4, 0.9, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        b(agent, 1, "bust", 6.0, 70, 60, 30, 3.6, 0.9, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        AttackModule::clear(agent.module_accessor, 2, false);
     }
     at!(agent, 21);
     if now!(agent) { clear(agent); macros::FT_MOTION_RATE(agent, 0.75); }   // less endlag
-    at!(agent, 44);
+    at!(agent, 38);
     if now!(agent) { landing_off(agent); }
 }
 pub unsafe extern "C" fn effect_attackairlw(agent: &mut L2CAgentBase) {
-    at!(agent, 8);
-    if now!(agent) {
-        fx(agent, "sys_attack_impact", "top", 0.0, -2.0, 0.0, 0.0, 0.0, 0.0, 1.0); red(agent);
-        fx_follow(agent, "sys_attack_speedline", "top", 0.0, 4.0, 0.0, 90.0, 0.0, 0.0, 0.6); orange(agent);
-    }
+    at!(agent, 6);
+    if now!(agent) { fx_follow(agent, "sys_attack_speedline", "top", 0.0, 6.0, 0.0, 90.0, 0.0, 0.0, 0.8); orange(agent); }
+    at!(agent, 7);
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 0.5, 0.5, 0.0, 0.0, 0.0, 1.0); red(agent); }
 }
 pub unsafe extern "C" fn sound_attackairlw(agent: &mut L2CAgentBase) {
-    at!(agent, 7);
+    at!(agent, 3);
+    if now!(agent) { se(agent, "se_pzenigame_jump02"); }
+    at!(agent, 6);
     if now!(agent) { se(agent, "se_pzenigame_swing_l"); se(agent, "vc_pzenigame_attack06"); }
 }
 
