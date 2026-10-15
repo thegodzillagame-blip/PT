@@ -32,7 +32,8 @@ const DD_SPEED_MUL: f32 = 0.3;         // +30% movement speed
 const DD_POWER: f32 = 1.4;             // the next attack only: +40% damage
 const GIGA_DIVE_SPEED: f32 = 4.5;      // units/frame straight down (Charizard's max fall is ~1.9)
 const OUTRAGE_MULTI: i32 = 4;          // claw rakes before the finisher
-const OUTRAGE_RUSH_MAX: i32 = 18;      // frames of running before a whiffed rampage stops (shorter than Flare Blitz)
+const OUTRAGE_SLOW: f32 = 0.35;        // side B runs at 65% of Flare Blitz's speed
+const OUTRAGE_RUSH_MAX: i32 = 13;      // frames of running before a whiffed rampage stops (shorter than Flare Blitz)
 
 unsafe fn is_attack_status(st: i32) -> bool {
     [*FIGHTER_STATUS_KIND_ATTACK, *FIGHTER_STATUS_KIND_ATTACK_DASH, *FIGHTER_STATUS_KIND_ATTACK_S3, *FIGHTER_STATUS_KIND_ATTACK_HI3,
@@ -121,8 +122,11 @@ unsafe fn outrage(boma: *mut BattleObjectModuleAccessor, e: usize) {
     if hit && !OUTRAGE_WAS_HIT[e] { OUTRAGE_HITS[e] += 1; }
     OUTRAGE_WAS_HIT[e] = hit;
     OUTRAGE_FRAMES[e] += 1;
+    // slower charge than Flare Blitz: hold back a share of his travel every frame
+    let vx = KineticModule::get_sum_speed_x(boma, *KINETIC_ENERGY_RESERVE_ATTRIBUTE_MAIN);
+    PostureModule::add_pos(boma, &Vector3f { x: -vx * OUTRAGE_SLOW, y: 0.0, z: 0.0 });
     // while it's connecting he keeps raking; a whiff only runs a short way
-    let limit = if OUTRAGE_HITS[e] > 0 { OUTRAGE_RUSH_MAX + 14 } else { OUTRAGE_RUSH_MAX };
+    let limit = if OUTRAGE_HITS[e] > 0 { OUTRAGE_RUSH_MAX + 10 } else { OUTRAGE_RUSH_MAX };
     if OUTRAGE_HITS[e] >= OUTRAGE_MULTI || OUTRAGE_FRAMES[e] >= limit {
         OUTRAGE_FRAMES[e] = -1000;  // only request once
         StatusModule::change_status_request_from_script(boma, *FIGHTER_PLIZARDON_STATUS_KIND_SPECIAL_S_END, false);

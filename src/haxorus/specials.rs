@@ -100,19 +100,32 @@ unsafe fn outrage_claws(agent: &mut L2CAgentBase) {
     hitm(agent, 0, "top", 2.0, 367, 100, 45, 0, 6.0, 9.5, 4.0, 9.5, 15.0, 4, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
     hitm(agent, 1, "top", 2.0, 367, 100, 45, 0, 5.0, 4.0, 3.0, 4.0, 12.0, 4, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
 }
+/// Outrage visuals: purple rage pouring from his mouth and both claws, a fresh rake streak each swipe.
+unsafe fn outrage_fx(agent: &mut L2CAgentBase) {
+    for (f, sign) in [(1.0f32, 1.0f32), (16.0, -1.0)] {
+        frame(agent.lua_state_agent, f);
+        if now!(agent) {
+            macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_scratch"), Hash40::new("plizardon_scratch"), Hash40::new("top"), 2.0 * sign, 9, 12, 20, -10.0 * sign, 25.0 * sign, 1.1, true, *EF_FLIP_YZ);
+            tint(agent, 0.7, 0.2, 1.0);
+            fx_follow(agent, "sys_damage_aura", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7); purple(agent);
+            fx_follow(agent, "sys_smash_flash_s", "head", 2.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.8); purple(agent);
+            fx_follow(agent, "sys_damage_aura", "handl", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6); purple(agent);
+            fx_follow(agent, "sys_damage_aura", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6); purple(agent);
+            fx_follow(agent, "sys_attack_line", "handl", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.55); purple(agent);
+            fx_follow(agent, "sys_attack_line", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.55); purple(agent);
+        }
+        frame(agent.lua_state_agent, f + 7.0);
+        if now!(agent) {
+            fx_follow(agent, "sys_damage_aura", "head", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7); purple(agent);
+            fx_follow(agent, "sys_damage_aura", "handl", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6); purple(agent);
+            fx_follow(agent, "sys_damage_aura", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6); purple(agent);
+        }
+    }
+}
 pub unsafe extern "C" fn effect_specials(agent: &mut L2CAgentBase) {
     at!(agent, 1);
-    if now!(agent) {
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_scratch"), Hash40::new("plizardon_scratch"), Hash40::new("top"), 2, 9, 12, 20, -10, 25, 1.1, true, *EF_FLIP_YZ);
-        tint(agent, 1.0, 0.3, 0.6);
-        macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -3, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
-    }
-    at!(agent, 16);
-    if now!(agent) {
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_scratch"), Hash40::new("plizardon_scratch"), Hash40::new("top"), -2, 9, 12, 20, 10, -25, 1.1, true, *EF_FLIP_YZ);
-        tint(agent, 1.0, 0.3, 0.6);
-        macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -3, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false);
-    }
+    if now!(agent) { macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -3, 0, 0, 0, 0.9, 0, 0, 0, 0, 0, 0, false); }
+    outrage_fx(agent);
 }
 pub unsafe extern "C" fn sound_specials(agent: &mut L2CAgentBase) {
     at!(agent, 1);
@@ -125,7 +138,7 @@ pub unsafe extern "C" fn game_specialsend(agent: &mut L2CAgentBase) {
     at!(agent, 11);
     if now!(agent) {
         // finisher: weaker than Flare Blitz, and no recoil on him
-        hitm(agent, 0, "top", 7.0, 45, 95, 0, 60, 7.0, 10.0, 14.0, 3.0, 6.0, 0, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+        hitm(agent, 0, "top", 7.0, 45, 95, 0, 85, 7.0, 10.0, 14.0, 3.0, 6.0, 0, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
     }
     at!(agent, 14);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
@@ -165,7 +178,7 @@ pub unsafe extern "C" fn game_specialairs(agent: &mut L2CAgentBase) {
 pub unsafe extern "C" fn game_specialairsend(agent: &mut L2CAgentBase) {
     at!(agent, 9);
     if now!(agent) {
-        hitm(agent, 0, "top", 7.0, 45, 95, 0, 60, 7.0, 10.0, 14.0, 3.0, 6.0, 0, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
+        hitm(agent, 0, "top", 7.0, 45, 95, 0, 85, 7.0, 10.0, 14.0, 3.0, 6.0, 0, "collision_attr_cutup", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_CUTUP, *ATTACK_REGION_PUNCH);
     }
     at!(agent, 12);
     if now!(agent) { AttackModule::clear_all(agent.module_accessor); }
@@ -182,16 +195,7 @@ pub unsafe extern "C" fn sound_specialairsend(agent: &mut L2CAgentBase) {
     if now!(agent) { se(agent, "se_plizardon_swing_l"); se(agent, "vc_plizardon_attack06"); }
 }
 pub unsafe extern "C" fn effect_specialairs(agent: &mut L2CAgentBase) {
-    at!(agent, 1);
-    if now!(agent) {
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_scratch"), Hash40::new("plizardon_scratch"), Hash40::new("top"), 2, 9, 12, 20, -10, 25, 1.1, true, *EF_FLIP_YZ);
-        tint(agent, 1.0, 0.3, 0.6);
-    }
-    at!(agent, 16);
-    if now!(agent) {
-        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("plizardon_scratch"), Hash40::new("plizardon_scratch"), Hash40::new("top"), -2, 9, 12, 20, 10, -25, 1.1, true, *EF_FLIP_YZ);
-        tint(agent, 1.0, 0.3, 0.6);
-    }
+    outrage_fx(agent);
 }
 pub unsafe extern "C" fn sound_specialairs(agent: &mut L2CAgentBase) {
     at!(agent, 1);
@@ -220,7 +224,7 @@ unsafe extern "C" fn giga_game(agent: &mut L2CAgentBase) {
     at!(agent, 9);
     if now!(agent) {
         // launch: scoops them up with him (autolink, so they stay on him)
-        hitm(agent, 0, "top", 4.0, 367, 100, 60, 0, 7.0, 4.0, 4.0, 20.0, 2.0, 0, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hitm(agent, 0, "top", 3.0, 367, 100, 60, 0, 7.0, 4.0, 4.0, 20.0, 2.0, 0, "collision_attr_normal", *ATTACK_SOUND_LEVEL_M, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 11);
     if now!(agent) {
@@ -232,7 +236,7 @@ unsafe extern "C" fn giga_game(agent: &mut L2CAgentBase) {
     if now!(agent) {
         damage!(agent, *MA_MSC_DAMAGE_DAMAGE_NO_REACTION, *DAMAGE_NO_REACTION_MODE_NORMAL, 0);
         // spinning ascent: rakes them up with him, held right in front of his chest
-        hitm(agent, 0, "top", 1.5, 367, 100, 40, 0, 7.5, 9.0, 6.0, 19.0, 4.0, 4, "collision_attr_rush", *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hitm(agent, 0, "top", 0.8, 367, 100, 40, 0, 7.5, 9.0, 6.0, 19.0, 4.0, 4, "collision_attr_rush", *ATTACK_SOUND_LEVEL_S, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
     }
     at!(agent, 21);
     if now!(agent) { notify_event_msc_cmd!(agent, Hash40::new_raw(0x2127e37c07), *GROUND_CLIFF_CHECK_KIND_ALWAYS_BOTH_SIDES); }
