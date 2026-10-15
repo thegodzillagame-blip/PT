@@ -5,6 +5,7 @@
 
 mod util;
 mod haxorus;
+mod scraggy;
 
 /// costume slots this mod owns (c01)
 pub const SLOTS: [usize; 1] = [1];
@@ -12,4 +13,5 @@ pub const SLOTS: [usize; 1] = [1];
 #[skyline::main(name = "pt_team_c01")]
 pub fn main() {
     haxorus::install();
+    scraggy::install();
 }

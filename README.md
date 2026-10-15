@@ -39,3 +39,26 @@ ARCropolis + Skyline must already be installed (they are, since the mod loads).
 
 ## Building
 Push to GitHub - `.github/workflows/build.yml` builds the `.nro` with cargo-skyline.
+
+### Scraggy (Squirtle slot, `src/scraggy`)
+| move | frames (anim) | notes |
+|---|---|---|
+| jab 1/2 | 5-6 2.5%, 4-5 4% | two punches, no jab 3 |
+| dash attack trip | 10-12 9%, 13-17 6% | belly-flop slide |
+| ftilt tail whip | 9-11 8% | angled ftilts/fsmashes stay Squirtle's (no Scraggy anims) |
+| utilt head thrust | 8-11 6% 90° | juggle |
+| dtilt ball roll | 8-11 6%, 12-16 4% | low |
+| fsmash lunge | hold f14, 18-21 15% | headbutt |
+| usmash hop arc | hold f6, 8-13 14% | |
+| dsmash spin | hold f6, 12-18 13%, 19-32 8% | both sides, low |
+| nair spin | 7-11 9%, 12-28 5% | |
+| fair dropkick | 9-12 11% | |
+| bair head spike | 9-11 10% 270° | spike |
+| uair tail flip | 6-11 8% | |
+| dair double stomp | 8-11 12% meteor, 12-20 6% | |
+| fthrow headbutt | release 11, 8% | |
+| dthrow tail trip | release 17, 6% | knockdown (fist_down attr) |
+| bthrow back roll | release 14, 9% 135° | |
+| neutral B Focus Punch | Water Gun charge; punch 3-6 | 6% -> 22% with charge (75f full), charge is kept between uses, no water |
+| side B Headbutt | head hitbox from start f7, 10% | 12f flight, then the miss roll; bounces off on hit |
+| up B Brick Break | smash 10-11 12% spike, rise 12-20 5% | |
