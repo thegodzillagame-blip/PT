@@ -168,7 +168,7 @@ pub unsafe extern "C" fn sound_attacklw3(agent: &mut L2CAgentBase) {
     if now!(agent) { se(agent, "se_pzenigame_escape"); }
 }
 
-// ===================================================================== F-SMASH: lunging headbutt (charge holds at f14)
+// ===================================================================== F-SMASH: long-neck lunging headbutt (charge holds at f14)
 pub unsafe extern "C" fn game_attacks4(agent: &mut L2CAgentBase) {
     at!(agent, 14);
     if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_FLAG_START_SMASH_HOLD); }
@@ -189,7 +189,7 @@ pub unsafe extern "C" fn effect_attacks4(agent: &mut L2CAgentBase) {
         macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, -2, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
     }
     at!(agent, 18);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.5, 9.5, 0.0, 0.0, 0.0, 1.0); red(agent); }
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 5.5, 8.5, 0.0, 0.0, 0.0, 1.1); red(agent); }
 }
 pub unsafe extern "C" fn sound_attacks4(agent: &mut L2CAgentBase) {
     at!(agent, 15);
@@ -198,7 +198,7 @@ pub unsafe extern "C" fn sound_attacks4(agent: &mut L2CAgentBase) {
     if now!(agent) { se(agent, "se_pzenigame_smash_s01"); se(agent, "vc_pzenigame_attack06"); }
 }
 
-// ===================================================================== U-SMASH: hop and head-arc (Mario style, charge holds at f6)
+// ===================================================================== U-SMASH: coils leaning back, hops and arcs the head back -> over -> down in front (charge holds at f6)
 pub unsafe extern "C" fn game_attackhi4(agent: &mut L2CAgentBase) {
     at!(agent, 6);
     if now!(agent) { WorkModule::on_flag(agent.module_accessor, *FIGHTER_STATUS_ATTACK_FLAG_START_SMASH_HOLD); }
@@ -235,7 +235,7 @@ pub unsafe extern "C" fn game_attacklw4(agent: &mut L2CAgentBase) {
     at!(agent, 12);
     if now!(agent) {
         b(agent, 0, "head", 13.0, 30, 95, 30, 3.8, 1.2, *ATTACK_LR_CHECK_POS, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_HEAD);
-        hit(agent, 1, 0, "top", 12.0, 30, 95, 0, 30, 3.2, 0.0, 4.0, 0.0, 1.1, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
+        hit(agent, 1, 0, "top", 12.0, 30, 95, 0, 30, 3.4, 0.0, 3.5, 0.0, 1.1, *ATTACK_LR_CHECK_POS, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_BODY);
         AttackModule::set_attack_height_all(agent.module_accessor, AttackHeight(*ATTACK_HEIGHT_LOW), false);
     }
     at!(agent, 19);
@@ -251,11 +251,11 @@ pub unsafe extern "C" fn effect_attacklw4(agent: &mut L2CAgentBase) {
     if now!(agent) { macros::EFFECT_FLIP(agent, Hash40::new("sys_smash_flash"), Hash40::new("sys_smash_flash"), Hash40::new("top"), 0, 5, 0, 0, 0, 0, 0.7, 0, 0, 0, 0, 0, 0, true, *EF_FLIP_YZ); }
     at!(agent, 11);
     if now!(agent) {
-        fx_follow(agent, "sys_spin_wind", "top", 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.8); orange(agent);
+        fx_follow(agent, "sys_spin_wind", "top", 0.0, 3.5, 0.0, 0.0, 0.0, 0.0, 0.9); orange(agent);
         macros::FOOT_EFFECT(agent, Hash40::new("sys_turn_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 0.8, 0, 0, 0, 0, 0, 0, false);
     }
     at!(agent, 21);
-    if now!(agent) { fx_follow(agent, "sys_spin_wind_s", "top", 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.7); orange(agent); }
+    if now!(agent) { fx_follow(agent, "sys_spin_wind_s", "top", 0.0, 3.5, 0.0, 0.0, 0.0, 0.0, 0.8); orange(agent); }
 }
 pub unsafe extern "C" fn sound_attacklw4(agent: &mut L2CAgentBase) {
     at!(agent, 7);
@@ -331,10 +331,16 @@ pub unsafe extern "C" fn game_attackairb(agent: &mut L2CAgentBase) {
     if now!(agent) { landing_off(agent); }
 }
 pub unsafe extern "C" fn effect_attackairb(agent: &mut L2CAgentBase) {
+    // the swing happens behind him: arc sits behind/below, then a downward follow-through line as the head spikes
     at!(agent, 8);
-    if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 4, -1, 0, 52, 88, 0.7, true, *EF_FLIP_YZ); orange(agent); }
+    if now!(agent) { macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 3.5, -3, 0, 52, 88, 0.8, true, *EF_FLIP_YZ); orange(agent); }
+    at!(agent, 9);
+    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 4.0, -3.2, 0.0, 0.0, 0.0, 0.9); red(agent); }
     at!(agent, 10);
-    if now!(agent) { fx(agent, "sys_attack_impact", "top", 0.0, 2.0, 0.5, 0.0, 0.0, 0.0, 0.9); red(agent); }
+    if now!(agent) {
+        macros::EFFECT_FOLLOW_FLIP(agent, Hash40::new("sys_attack_arc_d"), Hash40::new("sys_attack_arc_d"), Hash40::new("top"), 0, 1.5, -1.5, 0, 52, 88, 0.6, true, *EF_FLIP_YZ); orange(agent);
+        fx(agent, "sys_attack_line", "top", 0.0, 2.0, -2.6, 90.0, 0.0, 0.0, 0.7); orange(agent);
+    }
 }
 pub unsafe extern "C" fn sound_attackairb(agent: &mut L2CAgentBase) {
     at!(agent, 8);

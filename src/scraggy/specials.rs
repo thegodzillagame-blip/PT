@@ -1,7 +1,8 @@
 //! Scraggy specials (Squirtle's statuses underneath, re-scripted):
 //!   Neutral B  FOCUS PUNCH  - Water Gun's charge (hold B, storable): the release is a lunging punch whose power scales
 //!                             with the charge instead of a water stream.
-//!   Side B     HEADBUTT     - Withdraw's launch: leaps head-first; on hit he bounces off (Withdraw's hit status),
+//!   Side B     HEADBUTT     - Withdraw's launch: leaps head-first (10% sweetspot, weaker 5% sourspot late in the flight);
+//!                             on hit he bounces off (Withdraw's hit status),
 //!                             on a miss he belly-flops and rolls (mod.rs cuts the slide short).
 //!   Up B       BRICK BREAK  - Waterfall's rise: fist smashes the ground first (spike), then he springs up.
 use smash::app::{lua_bind::*, sv_animcmd::*, *};
@@ -24,12 +25,10 @@ pub unsafe extern "C" fn sound_specialnstart(agent: &mut L2CAgentBase) {
     at!(agent, 2);
     if now!(agent) { se(agent, "se_pzenigame_squat"); }
 }
+/// the charge glow is driven from mod.rs (it grows with the stored charge), so the hold script only adds the wind-up dust
 pub unsafe extern "C" fn effect_specialnhold(agent: &mut L2CAgentBase) {
-    // pulsing yellow glow on the right fist through the whole charge loop
-    for f in [1.0f32, 9.0, 17.0, 25.0, 33.0, 41.0] {
-        frame(agent.lua_state_agent, f);
-        if now!(agent) { fx_follow(agent, "sys_smash_flash_s", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7); yellow(agent); }
-    }
+    at!(agent, 1);
+    if now!(agent) { macros::FOOT_EFFECT(agent, Hash40::new("sys_dash_smoke"), Hash40::new("top"), 0, 0, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 0, 0, false); }
 }
 pub unsafe extern "C" fn sound_specialnhold(agent: &mut L2CAgentBase) {
     at!(agent, 1);
@@ -44,8 +43,8 @@ pub unsafe extern "C" fn game_specialnshot(agent: &mut L2CAgentBase) {
     at!(agent, 3);
     if now!(agent) {
         super::focus_spend(e);
-        hit(agent, 0, 0, "handr", dmg, 361, 80, 0, bkb, 3.6, 0.0, 0.0, 0.0, 1.0 + 0.8 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
-        hit_cap(agent, 1, 0, "top", dmg * 0.85, 361, 80, 0, bkb, 2.8, 5.0, 4.0, 5.0, 12.0, 1.0 + 0.6 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+        hit(agent, 0, 0, "handr", dmg, 55, 80, 0, bkb, 3.6, 0.0, 0.0, 0.0, 1.0 + 0.8 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
+        hit_cap(agent, 1, 0, "top", dmg * 0.85, 55, 80, 0, bkb, 2.8, 5.0, 4.0, 5.0, 12.0, 1.0 + 0.6 * c, *ATTACK_LR_CHECK_F, "collision_attr_normal", *ATTACK_SOUND_LEVEL_L, *COLLISION_SOUND_ATTR_PUNCH, *ATTACK_REGION_PUNCH);
         // lighter launch but a long stun, so he can follow up (it's jump-cancelable on hit - see mod.rs)
         AttackModule::set_add_reaction_frame(agent.module_accessor, 0, 10.0 + 15.0 * c, false);
         AttackModule::set_add_reaction_frame(agent.module_accessor, 1, 10.0 + 15.0 * c, false);
@@ -61,8 +60,10 @@ pub unsafe extern "C" fn effect_specialnshot(agent: &mut L2CAgentBase) {
     }
     at!(agent, 3);
     if now!(agent) {
-        fx(agent, "sys_smash_flash", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9); red(agent);
-        fx(agent, "sys_crown", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 0.5); tint(agent, 1.0, 1.0, 1.0);
+        let e = (WorkModule::get_int(agent.module_accessor, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize).min(7);
+        let c = super::focus_last(e);
+        fx(agent, "sys_smash_flash", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9 + 0.6 * c); red(agent);
+        fx(agent, "sys_crown", "handr", 0.0, 0.0, 0.0, 0.0, 0.0, 90.0, 0.5 + 0.4 * c); tint(agent, 1.0, 1.0, 1.0);
     }
 }
 pub unsafe extern "C" fn sound_specialnshot(agent: &mut L2CAgentBase) {

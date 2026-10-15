@@ -11,26 +11,78 @@ mod throws;
 
 static mut FP_CHARGE: [i32; 8] = [0; 8];      // Focus Punch charge frames (kept between uses, like DK's punch)
 static mut HB_FRAMES: [i32; 8] = [0; 8];      // frames spent flying in the Headbutt
+static mut FP_LAST: [f32; 8] = [0.0; 8];      // charge of the punch just thrown (for its effects)
+static mut FP_GLOW: [bool; 8] = [false; 8];   // body tint is on (charging)
+static mut FP_IDLE: [i32; 8] = [0; 8];        // timer for the "fully charged" glint while it's stored
+static mut TRIP_DONE: [bool; 8] = [false; 8]; // down throw already tripped its victim
 const FP_FULL: i32 = 75;
 const SQUIRTLE_WATER_FX: [&str; 24] = ["pzenigame_dash", "pzenigame_run", "pzenigame_brake", "pzenigame_dash_atk", "pzenigame_mouth_water",
     "pzenigame_water_smash", "pzenigame_water_smash_r", "pzenigame_water_ripple", "pzenigame_water_attack_spin", "pzenigame_water_attack",
     "pzenigame_water_cutter", "pzenigame_water_cutter_r", "pzenigame_atk_hi4", "pzenigame_throw_b", "pzenigame_mizuteppo_shoot",
     "pzenigame_mizuteppo_hold", "pzenigame_mizuteppo_hit", "pzenigame_mizuteppo_max", "pzenigame_takinobori", "pzenigame_takinobori_start",
     "pzenigame_takinobori_end", "pzenigame_takinobori_splash", "pzenigame_karanikomoru", "pzenigame_karanikomoru_line"];                      // frames of charging for a full-power punch
-const HB_FLIGHT: i32 = 12;                    // how long the head-first flight lasts before a miss turns into the roll
+const HB_FLIGHT: i32 = 22;                    // how long the head-first flight lasts before a miss turns into the roll
+const HB_SOUR: i32 = 13;                      // from here on the head is a weaker sourspot
 
 pub(crate) unsafe fn focus_charge(e: usize) -> f32 { (FP_CHARGE[e] as f32 / FP_FULL as f32).min(1.0) }
-pub(crate) unsafe fn focus_spend(e: usize) { FP_CHARGE[e] = 0; }
+pub(crate) unsafe fn focus_spend(e: usize) { FP_LAST[e] = focus_charge(e); FP_CHARGE[e] = 0; }
+pub(crate) unsafe fn focus_last(e: usize) -> f32 { FP_LAST[e] }
 
 unsafe extern "C" fn scraggy_frame(fighter: &mut L2CFighterCommon) {
     let boma = fighter.module_accessor;
     let e = (WorkModule::get_int(boma, *FIGHTER_INSTANCE_WORK_ID_INT_ENTRY_ID) as usize).min(7);
     let status = StatusModule::status_kind(boma);
-    if status == *FIGHTER_STATUS_KIND_DEAD || status == *FIGHTER_STATUS_KIND_REBIRTH { FP_CHARGE[e] = 0; HB_FRAMES[e] = 0; return; }
-    // Focus Punch: charge builds while he holds the wind-up
-    if status == *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_N_CHARGE && FP_CHARGE[e] < FP_FULL {
-        FP_CHARGE[e] += 1;
-        if FP_CHARGE[e] == FP_FULL { macros_flash(boma); }
+    if status == *FIGHTER_STATUS_KIND_DEAD || status == *FIGHTER_STATUS_KIND_REBIRTH {
+        FP_CHARGE[e] = 0; HB_FRAMES[e] = 0;
+        if FP_GLOW[e] { ColorBlendModule::cancel_main_color(boma, 0); FP_GLOW[e] = false; }
+        return;
+    }
+    // Focus Punch: charge builds while he holds the wind-up, and it SHOWS: the body glows hotter and faster,
+    // the fist flares bigger and more often, and a full charge flashes and keeps glinting while it's stored
+    let charging = status == *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_N_CHARGE;
+    if charging {
+        if FP_CHARGE[e] < FP_FULL {
+            FP_CHARGE[e] += 1;
+            if FP_CHARGE[e] == FP_FULL { full_flash(boma); }
+        }
+        let c = focus_charge(e);
+        let n = FP_CHARGE[e] as f32;
+        let pulse = 0.5 + 0.5 * (n * (0.25 + 0.35 * c)).sin();
+        let a = (0.12 + 0.5 * c) * (0.4 + 0.6 * pulse);
+        ColorBlendModule::set_main_color(boma, &smash::phx::Vector4f { x: 1.0, y: 1.0, z: 1.0, w: 0.1 },
+            &smash::phx::Vector4f { x: 1.0, y: 0.85 - 0.45 * c, z: 0.15, w: a }, 0.21, 2.2, 0, true);
+        FP_GLOW[e] = true;
+        let every = if FP_CHARGE[e] >= FP_FULL { 5 } else { 12 - (7.0 * c) as i32 };
+        if FP_CHARGE[e] % every == 0 {
+            let (r, g, b) = if FP_CHARGE[e] >= FP_FULL { (1.0, 0.35, 0.1) } else { (1.0, 0.9 - 0.4 * c, 0.3) };
+            fist_fx(boma, "sys_smash_flash_s", 0.5 + 0.9 * c, r, g, b);
+        }
+        FP_IDLE[e] = 0;
+    } else {
+        if FP_GLOW[e] { ColorBlendModule::cancel_main_color(boma, 0); FP_GLOW[e] = false; }
+        if FP_CHARGE[e] >= FP_FULL {
+            FP_IDLE[e] += 1;
+            if FP_IDLE[e] % 40 == 0 { fist_fx(boma, "sys_smash_flash_s", 0.6, 1.0, 0.45, 0.1); }
+        }
+    }
+    // down throw: Tail Trip - right after the release the victim trips (prone, like a trip from a banana)
+    if status == *FIGHTER_STATUS_KIND_THROW && MotionModule::motion_kind(boma) == smash::hash40("throw_lw") {
+        let f = MotionModule::frame(boma);
+        if !TRIP_DONE[e] && f >= 17.0 && f < 22.0 {
+            let id = WorkModule::get_int64(boma, *FIGHTER_STATUS_THROW_WORK_INT_TARGET_OBJECT) as u32;
+            if id != 0 && id != 0x50000000 && smash::app::sv_battle_object::is_active(id) {
+                let v = smash::app::sv_battle_object::module_accessor(id);
+                let vs = StatusModule::status_kind(v);
+                if vs != *FIGHTER_STATUS_KIND_THROWN && vs != *FIGHTER_STATUS_KIND_CAPTURE_PULLED && vs != *FIGHTER_STATUS_KIND_CAPTURE_WAIT
+                    && StatusModule::situation_kind(v) == *SITUATION_KIND_GROUND {
+                    KineticModule::clear_speed_all(v);
+                    StatusModule::change_status_request_from_script(v, *FIGHTER_STATUS_KIND_SLIP, false);
+                    TRIP_DONE[e] = true;
+                }
+            }
+        }
+    } else {
+        TRIP_DONE[e] = false;
     }
     // jab is 2 hits: Squirtle's status would still chain into jab 3, so never let jab 2 open the combo
     if status == *FIGHTER_STATUS_KIND_ATTACK && MotionModule::motion_kind(boma) == smash::hash40("attack_12") {
@@ -61,6 +113,12 @@ unsafe extern "C" fn scraggy_frame(fighter: &mut L2CFighterCommon) {
     // Headbutt: a short head-first flight, then the miss roll (Withdraw would keep sliding)
     if status == *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_LOOP {
         HB_FRAMES[e] += 1;
+        // late in the flight the headbutt is a sourspot: 5%, smaller, sends up and away instead of hard forward
+        if HB_FRAMES[e] >= HB_SOUR && AttackModule::is_attack(boma, 0, false) {
+            AttackModule::set_power(boma, 0, 5.0, false);
+            AttackModule::set_size(boma, 0, 3.0);
+            AttackModule::set_vector(boma, 0, 70, false);
+        }
         if HB_FRAMES[e] == HB_FLIGHT {
             StatusModule::change_status_request_from_script(boma, *FIGHTER_PZENIGAME_STATUS_KIND_SPECIAL_S_END, false);
         }
@@ -68,11 +126,16 @@ unsafe extern "C" fn scraggy_frame(fighter: &mut L2CFighterCommon) {
         HB_FRAMES[e] = 0;
     }
 }
-/// full charge: a bright flash on the fist
-unsafe fn macros_flash(boma: *mut BattleObjectModuleAccessor) {
+unsafe fn fist_fx(boma: *mut BattleObjectModuleAccessor, name: &str, scale: f32, r: f32, g: f32, b: f32) {
     let z = smash::phx::Vector3f { x: 0.0, y: 0.0, z: 0.0 };
-    let h = EffectModule::req_follow(boma, smash::phx::Hash40::new("sys_smash_flash"), smash::phx::Hash40::new("handr"), &z, &z, 1.0, true, 0, 0, 0, 0, 0, false, false);
-    EffectModule::set_rgb(boma, h as u32, 1.0, 0.9, 0.3);
+    let h = EffectModule::req_follow(boma, smash::phx::Hash40::new(name), smash::phx::Hash40::new("handr"), &z, &z, scale, true, 0, 0, 0, 0, 0, false, false);
+    EffectModule::set_rgb(boma, h as u32, r, g, b);
+}
+/// full charge: a big flash on the fist, a ring and the smash-charge "ding"
+unsafe fn full_flash(boma: *mut BattleObjectModuleAccessor) {
+    fist_fx(boma, "sys_smash_flash", 1.6, 1.0, 0.5, 0.1);
+    fist_fx(boma, "sys_crown", 0.5, 1.0, 0.8, 0.3);
+    SoundModule::play_se(boma, smash::phx::Hash40::new("se_common_smash_start_02"), true, false, false, false, smash::app::enSEType(0));
 }
 
 pub fn install() {

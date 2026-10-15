@@ -42,7 +42,8 @@ pub unsafe extern "C" fn sound_throwf(agent: &mut L2CAgentBase) {
 
 // ===================================================================== D-THROW: tail trip - slam down, tail sweeps their legs: knockdown, no bounce (release f17)
 pub unsafe extern "C" fn game_throwlw(agent: &mut L2CAgentBase) {
-    if now!(agent) { throw_abs(agent, 6.0, 361, 50, 60, "collision_attr_fist_down"); }
+    // weak, flat release: mod.rs then trips them on the spot (prone, tech-chase), so the knockback barely matters
+    if now!(agent) { throw_abs(agent, 6.0, 0, 30, 40, "collision_attr_normal"); }
     at!(agent, 16);
     if now!(agent) { macros::CHECK_FINISH_CAMERA(agent, 6, 0); }
     at!(agent, 17);

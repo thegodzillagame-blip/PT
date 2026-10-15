@@ -44,21 +44,21 @@ Push to GitHub - `.github/workflows/build.yml` builds the `.nro` with cargo-skyl
 | move | frames (anim) | notes |
 |---|---|---|
 | jab 1/2 | 5-6 2.5%, 4-5 4% | two punches; jab 3 blocked in the frame hook |
-| dash attack trip | 10-12 9%, 13-17 6% | belly-flop slide |
+| dash attack trip | 10-12 9%, 13-17 6% | belly-flop slide, ~26 travel (root motion) |
 | ftilt tail whip | 9-11 8% | angled ftilts/fsmashes stay Squirtle's (no Scraggy anims) |
 | utilt head thrust | 8-11 6% 90° | juggle |
-| dtilt ball roll | 8-11 6%, 12-16 4% | low; rolls ~8 forward (root motion) |
-| fsmash lunge | hold f14, 18-21 15% | headbutt |
-| usmash hop arc | hold f6, 8-13 14% | |
-| dsmash spin | hold f6, 12-18 13%, 19-32 8% | both sides, low |
+| dtilt ball roll | 8-11 6%, 12-16 4% | low; rolls ~13.5 forward (root motion) |
+| fsmash lunge | hold f14, 18-21 15% | long-neck headbutt (old lunge mixed with the new coil) |
+| usmash hop arc | hold f6, 8-13 14% | coils leaning back, head arcs back -> over -> front |
+| dsmash spin | hold f6, 12-18 13%, 19-32 8% | low spinning head sweep (based on the old anim), both sides |
 | nair spin | 7-11 9%, 12-28 5% | |
-| fair dropkick | 9-12 11% | |
+| fair dropkick | 9-12 11% | original (pre-rebuild) animation |
 | bair head spike | 9-11 10% 270° | spike |
 | uair tail flip | 6-11 8% | |
 | dair double stomp | 8-11 12% meteor, 12-20 6% | |
 | fthrow headbutt | release 11, 8% | |
-| dthrow tail trip | release 17, 6% | knockdown (fist_down attr) |
+| dthrow tail trip | release 17, 6% | victim is forced into a trip (SLIP) on release - tech chase |
 | bthrow back roll | release 14, 9% 135° | |
-| neutral B Focus Punch | Water Gun charge; punch 3-6 | 6% -> 22% with charge (75f full), bkb 15-40 + 10-25f extra hitstun, jump-cancelable on hit; charge kept between uses, no water |
-| side B Headbutt | head hitbox from start f7, 10% | 12f flight, then the miss roll; bounces off on hit |
+| neutral B Focus Punch | Water Gun charge; punch 3-6 | 6% -> 22% with charge (75f full), 55°, bkb 15-40 + 10-25f extra hitstun, jump-cancelable on hit; charge kept between uses; body glows hotter/faster with charge, full charge flashes + glints while stored |
+| side B Headbutt | head hitbox from start f7, 10%; sourspot 5% 70° from flight frame 13 | 22f flight, then the miss roll; bounces off on hit |
 | up B Brick Break | smash 10-11 12% spike, rise 12-20 5% | smashes a rock (mesh pzenigame_Rock, shown f0-10), rises ~45 (root motion) to f28, falls with control from f30 | |
